@@ -3,10 +3,27 @@
 @{
     ViewData["Title"] = "Home page";
 }
+<!--TODO: 
+        User's who are logged in should display a proper homepage!!-->
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-
-    <img src = "bulding.jpg" asp-append-version = "true"> 
+<div class="container">
+    <div class="d-flex flex-row justify-content-center p-5">
+        <div class="alert alert-warning w-75 " role="alert">
+            <h4 class="alert-heading">Warning! You are not logged in!</h4>
+            <p>This website is by Goucher students for Goucher students. To gain full access please log in.
+                If you are a Goucher student and don’t have an account, please register first. </p>
+            <hr>
+            <p class="mb-0">Access to this website is forbidden to those outside the Goucher community.
+            </p>
+            <p class="my-0">Questions? Please email the administrator. </p>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-sm-0">
+            <button type="button" class="btn btn-primary btn-lg w-100">Login</button>
+        </div>
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-secondary btn-lg">Register</button>
+        </div>
+    </div>
 </div>

@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,24 +8,39 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
+
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-light navbar-expand-lg" style="background-color: #E3F2FD;">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">GopherExchange</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" asp-area="" asp-page="/Index">Gopher Exchange</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse ">
+                    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark"> Listings </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark"> Wishlist</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark">Account</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
                     </ul>
+                    <form class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-primary my-2 my-sm-0" type="submit"
+                            asp-page="/Index">Search</button>
+                    </form>
                 </div>
             </div>
         </nav>
@@ -35,9 +51,12 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted" style="background-color: #E3F2FD;">
         <div class="container">
-            &copy; 2021 - GopherExchange - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            <p class="text-sm-left mb-0">
+                &copy; 2021 - GopherExchange. All rights reserved - <a asp-area="" asp-page="/Privacy">Privacy.</a>
+                Use of this service is authorized only to students, faculty, and staff of Goucher College.
+            </p>
         </div>
     </footer>
 
@@ -47,4 +66,5 @@
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>
