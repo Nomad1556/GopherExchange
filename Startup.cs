@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using GopherExchange.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace GopherExchange
 {
@@ -24,6 +26,9 @@ namespace GopherExchange
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
+            services.AddDbContext<gopherexchangeContext>(options => 
+                options.UseNpgsql(Configuration["DBConnection"]));
+            services.AddScoped<GEServce>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

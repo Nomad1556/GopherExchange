@@ -11,10 +11,12 @@ namespace GopherExchange.Pages
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
+        private readonly GEServce _service;
 
-        public IndexModel(ILogger<IndexModel> logger)
+        public IndexModel(ILogger<IndexModel> logger, GEServce service)
         {
             _logger = logger;
+            _service = service;
         }
 
         public void OnGet()
