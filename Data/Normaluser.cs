@@ -14,7 +14,6 @@ namespace GopherExchange.Data
 
         public int Userid { get; set; }
 
-        public virtual Account User { get; set; }
         public virtual ICollection<Wishlist> Wishlists { get; set; }
     }
 }

@@ -13,10 +13,10 @@
 
 <div class="container">
     <div class="col-md-9">
-        <form class="needs-validation" novalidate>
+        <form method="post" class="needs-validation" novalidate>
             <div class="form-group">
                 <label for="Email1">Email address</label>
-                <input type="email" class="form-control" id="Email1" aria-describedby="emailHelp"
+                <input asp-for="Input.goucherEmail" class="form-control" id="Email1" aria-describedby="emailHelp"
                     placeholder="name@goucher.edu or name@mail.goucher.edu" required>
                 <small id="emailHelp" class="form-text text-muted">We'll show your email so that other Goucher students
                     can
@@ -25,7 +25,8 @@
             </div>
             <div class="form-group">
                 <label for="Password1">Password</label>
-                <input type="password" class="form-control" id="Password1" placeholder="Password" required>
+                <input asp-for="Input.password" type="password" class="form-control" id="Password1"
+                    placeholder="Password" required>
                 <div class="invalid-feedback">You must enter a password</div>
             </div>
             <div class="form-group">
@@ -39,6 +40,8 @@
                         Service and Privacy Policy</a></label>
                 <div class="invalid-feedback">You must agree before submitting</div>
             </div>
+            <input type="hidden" asp-for="Input.accountType" value="1">
+            <input type="hidden" asp-for="Input.userName" value="test">
             <button type="submit" class="btn btn-primary mt-3">Submit</button>
         </form>
         <script>

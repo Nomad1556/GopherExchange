@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GopherExchange.Data;
+using GopherExchange.Models;
 
 namespace GopherExchange{
     public class GEServce{
@@ -15,6 +16,15 @@ namespace GopherExchange{
             _context = context;
             _logger = factory.CreateLogger<GEServce>();
 
+        }
+
+        public async Task createAccountModel(GenerateAccountModel command){
+
+            Account acc = command.GenerateAccount();
+            _context.Add(acc);
+            await _context.SaveChangesAsync();
+            Console.WriteLine("Account made successfully!");
+            
         }
     }
 }

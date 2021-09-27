@@ -9,7 +9,5 @@ namespace GopherExchange.Data
     {
         public int Userid { get; set; }
         public int Adminid { get; set; }
-
-        public virtual Account User { get; set; }
     }
 }

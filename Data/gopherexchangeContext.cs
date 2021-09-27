@@ -15,7 +15,6 @@ namespace GopherExchange.Data
         public gopherexchangeContext(DbContextOptions<gopherexchangeContext> options)
             : base(options)
         {
-            Console.WriteLine("Connected2");
         }
 
         public virtual DbSet<Account> Accounts { get; set; }
@@ -34,7 +33,6 @@ namespace GopherExchange.Data
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseNpgsql("Name=DBConnection");
-                Console.WriteLine("Connected1");
             }
         }
 
@@ -92,18 +90,11 @@ namespace GopherExchange.Data
 
                 entity.ToTable("administrator");
 
-                entity.Property(e => e.Userid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("userid");
+                entity.Property(e => e.Userid).HasColumnName("userid");
 
                 entity.Property(e => e.Adminid)
                     .ValueGeneratedOnAdd()
                     .HasColumnName("adminid");
-
-                entity.HasOne(d => d.User)
-                    .WithOne(p => p.Administrator)
-                    .HasForeignKey<Administrator>(d => d.Userid)
-                    .HasConstraintName("administrator_userid_fkey");
             });
 
             modelBuilder.Entity<Contain>(entity =>
@@ -205,14 +196,7 @@ namespace GopherExchange.Data
 
                 entity.ToTable("normaluser");
 
-                entity.Property(e => e.Userid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("userid");
-
-                entity.HasOne(d => d.User)
-                    .WithOne(p => p.Normaluser)
-                    .HasForeignKey<Normaluser>(d => d.Userid)
-                    .HasConstraintName("normaluser_userid_fkey");
+                entity.Property(e => e.Userid).HasColumnName("userid");
             });
 
             modelBuilder.Entity<Report>(entity =>
