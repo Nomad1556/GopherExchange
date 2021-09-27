@@ -28,7 +28,6 @@ namespace GopherExchange.Pages
         public async Task<IActionResult> OnPost(){
 
             try{
-                
                 if(ModelState.IsValid){
                     await _service.createAccountModel(Input);
                     return RedirectToPage("Index");
