@@ -11,9 +11,9 @@ namespace GopherExchange.Pages
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-        private readonly GEServce _service;
+        private readonly GEService _service;
 
-        public IndexModel(ILogger<IndexModel> logger, GEServce service)
+        public IndexModel(ILogger<IndexModel> logger, GEService service)
         {
             _logger = logger;
             _service = service;

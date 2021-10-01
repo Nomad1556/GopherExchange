@@ -26,9 +26,9 @@ namespace GopherExchange
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddDbContext<gopherexchangeContext>(options => 
+            services.AddDbContext<GeDbConext>(options => 
                 options.UseNpgsql(Configuration["DBConnection"]));
-            services.AddScoped<GEServce>();
+            services.AddScoped<GEService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,7 +49,7 @@ namespace GopherExchange
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

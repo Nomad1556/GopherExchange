@@ -6,25 +6,22 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace GopherExchange.Data
 {
-    public partial class gopherexchangeContext : DbContext
+    public partial class GeDbConext : DbContext
     {
-        public gopherexchangeContext()
+        public GeDbConext()
         {
         }
 
-        public gopherexchangeContext(DbContextOptions<gopherexchangeContext> options)
+        public GeDbConext(DbContextOptions<GeDbConext> options)
             : base(options)
         {
         }
 
         public virtual DbSet<Account> Accounts { get; set; }
-        public virtual DbSet<Add> Adds { get; set; }
-        public virtual DbSet<Administrator> Administrators { get; set; }
         public virtual DbSet<Contain> Contains { get; set; }
         public virtual DbSet<File> Files { get; set; }
         public virtual DbSet<List> Lists { get; set; }
         public virtual DbSet<Listing> Listings { get; set; }
-        public virtual DbSet<Normaluser> Normalusers { get; set; }
         public virtual DbSet<Report> Reports { get; set; }
         public virtual DbSet<Wishlist> Wishlists { get; set; }
 
@@ -49,6 +46,8 @@ namespace GopherExchange.Data
 
                 entity.Property(e => e.Userid).HasColumnName("userid");
 
+                entity.Property(e => e.Accounttype).HasColumnName("accounttype");
+
                 entity.Property(e => e.Goucheremail)
                     .IsRequired()
                     .HasColumnName("goucheremail");
@@ -56,45 +55,10 @@ namespace GopherExchange.Data
                 entity.Property(e => e.Username)
                     .IsRequired()
                     .HasColumnName("username");
-            });
-
-            modelBuilder.Entity<Add>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("adds");
-
-                entity.Property(e => e.Userid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("userid");
-
-                entity.Property(e => e.Wishlistid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("wishlistid");
-
-                entity.HasOne(d => d.User)
-                    .WithMany()
-                    .HasForeignKey(d => d.Userid)
-                    .HasConstraintName("adds_userid_fkey");
-
-                entity.HasOne(d => d.Wishlist)
-                    .WithMany()
-                    .HasForeignKey(d => d.Wishlistid)
-                    .HasConstraintName("adds_wishlistid_fkey");
-            });
-
-            modelBuilder.Entity<Administrator>(entity =>
-            {
-                entity.HasKey(e => e.Userid)
-                    .HasName("administrator_pkey");
-
-                entity.ToTable("administrator");
-
-                entity.Property(e => e.Userid).HasColumnName("userid");
-
-                entity.Property(e => e.Adminid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("adminid");
+                    
+                entity.Property(e => e.HashedPassword)
+                    .IsRequired()
+                    .HasColumnName("hashedpassword");
             });
 
             modelBuilder.Entity<Contain>(entity =>
@@ -189,16 +153,6 @@ namespace GopherExchange.Data
                 entity.Property(e => e.Typeid).HasColumnName("typeid");
             });
 
-            modelBuilder.Entity<Normaluser>(entity =>
-            {
-                entity.HasKey(e => e.Userid)
-                    .HasName("normaluser_pkey");
-
-                entity.ToTable("normaluser");
-
-                entity.Property(e => e.Userid).HasColumnName("userid");
-            });
-
             modelBuilder.Entity<Report>(entity =>
             {
                 entity.ToTable("report");
@@ -241,8 +195,6 @@ namespace GopherExchange.Data
                 entity.ToTable("wishlist");
 
                 entity.Property(e => e.Wishlistid).HasColumnName("wishlistid");
-
-                entity.Property(e => e.Name).HasColumnName("name");
 
                 entity.Property(e => e.Userid)
                     .ValueGeneratedOnAdd()

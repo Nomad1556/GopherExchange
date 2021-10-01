@@ -11,9 +11,9 @@ namespace GopherExchange.Pages
 {
     public class RegistrationModel : PageModel
     {
-        private readonly GEServce _service;
+        private readonly GEService _service;
 
-        public RegistrationModel(GEServce service){
+        public RegistrationModel(GEService service){
             _service = service;
         }
 
@@ -32,8 +32,8 @@ namespace GopherExchange.Pages
                     await _service.createAccountModel(Input);
                     return RedirectToPage("Index");
                 }
-            }catch( Exception){
-                Console.WriteLine("Something happened");
+            }catch(Exception){
+                Console.WriteLine();
             }
             return Page();
         }
