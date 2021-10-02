@@ -19,7 +19,10 @@
         </div>
     </div>
     <div class="col-md-12 text-center">
-        <a class="btn btn-primary btn-lg mr-5" asp-page="./Index">Login</a>
-        <a class="btn btn-secondary btn-lg ml-5" asp-page="./Registration">Register</a>
+        <a class="btn btn-primary btn-lg mr-5" asp-page="./Account/Login">Login</a>
+        <a class="btn btn-secondary btn-lg ml-5" asp-page="./Account/Registration">Register</a>
+        <form type="hidden" method="post">
+            <button type="submit" class="btn-danger mt-5">Sign out</button>
+        </form>
     </div>
 </div>

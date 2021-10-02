@@ -1,36 +1,68 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using GopherExchange.Data;
 using GopherExchange.Models;
+using GopherExchange.Data;
+using System.Linq;
+using Microsoft.Extensions.Logging;
 
-namespace GopherExchange{
-    public class GEService{
-        readonly GeDbConext _context;
+
+namespace GopherExchange.Services
+{
+    public class userManager{
+
+        //Adds custom class variables???
+        public enum ResponseType
+        {
+            Success,
+            Failure
+        }
         readonly ILogger _logger;
 
-        public GEService(GeDbConext context, ILoggerFactory factory){
-            _context = context;
-            _logger = factory.CreateLogger<GEService>();
+        readonly GeDbConext _context;
 
-
+        public userManager(ILoggerFactory factory, GeDbConext conext){
+            _logger = factory.CreateLogger<userManager>();
+            _context = conext;
         }
 
-        public async Task createAccountModel(GenerateAccountModel command){
+        public async Task <ResponseType> createAccountAsync(GenerateAccountModel cmd){
 
-            Account acc = command.GenerateAccount();
-            acc.HashedPassword = HashPassword(acc.HashedPassword);
-            acc.Userid = GenerateAccountNumber();
-            _context.Add(acc);
-            await _context.SaveChangesAsync();
-            Console.WriteLine("Account made successfully!");
+            Account acc = new Account{
+                Userid = GenerateAccountNumber(),
+                Username = cmd.goucherEmail.Split("@")[0],
+                Goucheremail = cmd.goucherEmail,
+                Accounttype = cmd.accountType,
+                HashedPassword = HashPassword(cmd.password)
+            };
+                try{
+                    _logger.LogInformation("Adding...");
+                    _context.Add(acc);
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation("Account made...");
+                    
+                }catch(Exception e){
+                    _logger.LogInformation("Unable to create account: " + e.ToString());
+                    return ResponseType.Failure;
+                }
+
+            _logger.LogInformation("Account with password made successfully");
+            return ResponseType.Success;
+        }
+
+        public Account validateUser(BindingLoginModel cmd){
+            if(cmd == null) return null;
+
+            var acc = _context.Accounts
+                        .FirstOrDefault(a => a.Goucheremail == cmd.goucherEmail);
+
+            if (acc == null) return null;
+
+            bool verified = VerifyHashedPassword(acc.HashedPassword, cmd.password);
             
+            if(!verified) return null;
+            return acc;
         }
-
         private string HashPassword(string password) {
             byte[] salt;
             byte[] buffer2;
@@ -47,6 +79,19 @@ namespace GopherExchange{
             Buffer.BlockCopy(salt,0,dst,1,0x10);
             Buffer.BlockCopy(buffer2,0,dst,0x11,0x20);
             return Convert.ToBase64String(dst);
+        }
+
+        private int GenerateAccountNumber(){
+            byte[] accNumber = new byte[0xa];
+
+            using(RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider()){
+
+                rngCsp.GetNonZeroBytes(accNumber);
+            }
+
+            int x = BitConverter.ToInt32(accNumber);
+            if (x < 0) return -x;
+            return x;
         }
 
         private bool VerifyHashedPassword(string HashedPassword, string password) {
@@ -83,19 +128,5 @@ namespace GopherExchange{
             }
             return areSame;
         }
-
-        private int GenerateAccountNumber(){
-            byte[] accNumber = new byte[0xa];
-
-            using(RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider()){
-
-                rngCsp.GetNonZeroBytes(accNumber);
-            }
-
-            int x = BitConverter.ToInt32(accNumber);
-            if (x < 0) return -x;
-            return x;
-        }
-
     }
 }
