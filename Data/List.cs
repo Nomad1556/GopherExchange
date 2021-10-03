@@ -11,6 +11,6 @@ namespace GopherExchange.Data
         public int Listingid { get; set; }
 
         public virtual Listing Listing { get; set; }
-        public virtual Normaluser User { get; set; }
+        public virtual Account User { get; set; }
     }
 }

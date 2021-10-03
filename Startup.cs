@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using GopherExchange.Data;
 using Microsoft.EntityFrameworkCore;
+using GopherExchange.Services;
 
 namespace GopherExchange
 {
@@ -26,9 +28,21 @@ namespace GopherExchange
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddDbContext<gopherexchangeContext>(options => 
+            services.AddDbContext<GeDbConext>(options => 
                 options.UseNpgsql(Configuration["DBConnection"]));
-            services.AddScoped<GEServce>();
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => {
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+            });
+
+            services.AddAuthentication(options =>{
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            });
+            services.AddScoped<GEService>();
+            services.AddScoped<userManager>();
+            services.AddTransient<loginManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,7 +63,7 @@ namespace GopherExchange
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

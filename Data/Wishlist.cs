@@ -9,8 +9,7 @@ namespace GopherExchange.Data
     {
         public int Wishlistid { get; set; }
         public int Userid { get; set; }
-        public string Name { get; set; }
 
-        public virtual Normaluser User { get; set; }
+        public virtual Account User { get; set; }
     }
 }

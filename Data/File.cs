@@ -11,6 +11,6 @@ namespace GopherExchange.Data
         public int Reportid { get; set; }
 
         public virtual Report Report { get; set; }
-        public virtual Normaluser User { get; set; }
+        public virtual Account User { get; set; }
     }
 }
