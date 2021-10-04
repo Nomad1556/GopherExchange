@@ -30,7 +30,7 @@ namespace GopherExchange.Pages
 
         public async Task<IActionResult> OnPost(){
             await _login.signOut(this.HttpContext);
-            return Page();
+            return RedirectToPage("./Index");
         }
     }
 }
