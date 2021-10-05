@@ -11,7 +11,7 @@ namespace GopherExchange.Services
 {
     public class userManager{
 
-        //Adds custom class variables???
+        
         public enum ResponseType
         {
             Success,
@@ -21,9 +21,10 @@ namespace GopherExchange.Services
 
         readonly GeDbConext _context;
 
-        public userManager(ILoggerFactory factory, GeDbConext conext){
+
+        public userManager(ILoggerFactory factory, GeDbConext context){
             _logger = factory.CreateLogger<userManager>();
-            _context = conext;
+            _context = context;
         }
 
         public async Task <ResponseType> createAccountAsync(GenerateAccountModel cmd){
@@ -86,7 +87,7 @@ namespace GopherExchange.Services
 
             using(RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider()){
 
-                rngCsp.GetNonZeroBytes(accNumber);
+                rngCsp.GetBytes(accNumber);
             }
 
             int x = BitConverter.ToInt32(accNumber);

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -33,13 +33,13 @@ namespace GopherExchange
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => {
-                options.LoginPath = "/Account/Login";
-                options.LogoutPath = "/Account/Logout";
+                options.LoginPath = "/Index";
             });
 
             services.AddAuthentication(options =>{
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             });
+            services.AddHttpContextAccessor();
             services.AddScoped<GEService>();
             services.AddScoped<userManager>();
             services.AddTransient<loginManager>();
@@ -68,7 +68,8 @@ namespace GopherExchange
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                endpoints.MapRazorPages().RequireAuthorization();
+                
             });
         }
     }

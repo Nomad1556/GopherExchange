@@ -1,17 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using GopherExchange.Models;
-using System.ComponentModel.DataAnnotations;
 using GopherExchange.Services;
 
 
 namespace GopherExchange.Pages.Account
 {
+    [AllowAnonymous]
     public class RegistrationModel : PageModel
     {
         private readonly GEService _service;
@@ -19,10 +18,13 @@ namespace GopherExchange.Pages.Account
 
         private readonly loginManager _login;
 
-        public RegistrationModel(GEService service, userManager usermanager, loginManager login){
+        private readonly ILogger _logger;
+
+        public RegistrationModel(GEService service, userManager usermanager, loginManager login, ILoggerFactory factory){
             _service = service; 
             _usermanager = usermanager;
             _login = login;
+            _logger = factory.CreateLogger<RegistrationModel>();
         }
 
         [BindProperty]
@@ -44,7 +46,7 @@ namespace GopherExchange.Pages.Account
                            goucherEmail = Input.goucherEmail,
                            password = Input.password
                        });
-                       await _login.signIn(this.HttpContext, account,isPersistent: false);
+                       await _login.signIn(account,isPersistent: false);
                        
                        return RedirectToPage("/Index");
                    }
@@ -53,8 +55,8 @@ namespace GopherExchange.Pages.Account
                    }
                    
                 }
-            }catch(Exception){
-                Console.WriteLine("Uh oh doodoo");
+            }catch(Exception e){
+               _logger.LogError(e.ToString());
             }
             return Page();
         }

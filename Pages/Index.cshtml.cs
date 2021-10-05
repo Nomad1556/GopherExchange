@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using GopherExchange.Services;
+using System.Security.Claims;
 
 namespace GopherExchange.Pages
 {
+
+    [AllowAnonymous]
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
@@ -29,7 +33,7 @@ namespace GopherExchange.Pages
         }
 
         public async Task<IActionResult> OnPost(){
-            await _login.signOut(this.HttpContext);
+            await _login.signOut();
             return RedirectToPage("./Index");
         }
     }
