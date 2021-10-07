@@ -20,24 +20,28 @@ namespace GopherExchange.Services
             Admin
         }
 
-        public loginManager(ILoggerFactory factory){
-            _logger = factory.CreateLogger<userManager>();
+        readonly IHttpContextAccessor _accessor;
 
+        public loginManager(ILoggerFactory factory, IHttpContextAccessor accessor){
+            _logger = factory.CreateLogger<userManager>();
+            _accessor = accessor;
         }
-        public async Task signIn(HttpContext httpContext, Account account, bool isPersistent = false){
+        public async Task signIn(Account account, bool isPersistent = false){
+            
             _logger.LogInformation("Making identity...");
             ClaimsIdentity identity = new ClaimsIdentity(getAccountClaims(account), CookieAuthenticationDefaults.AuthenticationScheme);
             _logger.LogInformation("Making Principal...");
             ClaimsPrincipal principal = new ClaimsPrincipal(identity);
             _logger.LogInformation("Trying to sign in...");
-            await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            await _accessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
             _logger.LogInformation("Signed in!");
 
         }
 
-        public async Task signOut(HttpContext httpContext){
+        public async Task signOut(){
+            HttpContext _httpcontext = _accessor.HttpContext;
             _logger.LogInformation("Trying to sign out...");
-            await httpContext.SignOutAsync();
+            await _accessor.HttpContext.SignOutAsync();
             _logger.LogInformation("Signed out!");
         }
 
@@ -48,19 +52,10 @@ namespace GopherExchange.Services
             claims.Add(new Claim(ClaimTypes.NameIdentifier, account.Userid.ToString()));
             claims.Add(new Claim(ClaimTypes.Name, account.Username));
             claims.Add(new Claim(ClaimTypes.Email, account.Goucheremail));
-            claims.AddRange(getAccountRoles(account));
-
-            return claims;
-        }
-
-        private IEnumerable<Claim> getAccountRoles(Account account){
-            _logger.LogInformation("Making roles...");
-            List<Claim> claims = new List<Claim>();
-
+            
             var permission = account.Accounttype == 1 ? Role.User: Role.Admin;
 
             claims.Add(new Claim(ClaimTypes.Role, permission.ToString()));
-
             return claims;
         }
     }

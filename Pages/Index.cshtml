@@ -5,8 +5,9 @@
 }
 <!--TODO: 
         User's who are logged in should display a proper homepage!!-->
-
-<div class="container">
+@if (!this.HttpContext.User.Identity.IsAuthenticated)
+{
+    <div class="container">
     <div class="d-flex flex-row justify-content-center pt-5">
         <div class="alert alert-warning w-75 " role="alert">
             <h4 class="alert-heading">Warning! You are not logged in!</h4>
@@ -21,8 +22,18 @@
     <div class="col-md-12 text-center">
         <a class="btn btn-primary btn-lg mr-5" asp-page="./Account/Login">Login</a>
         <a class="btn btn-secondary btn-lg ml-5" asp-page="./Account/Registration">Register</a>
+    </div>
+</div>
+}
+else
+{
+    <div class="container">
+    <h1>Hello, @this.HttpContext.User.Identity.Name</h1>
+    <div class="row">
         <form type="hidden" method="post">
-            <button type="submit" class="btn-danger mt-5">Sign out</button>
+            <button type="submit" class="btn-danger btn-lg mt-5">Sign out</button>
         </form>
     </div>
 </div>
+
+}

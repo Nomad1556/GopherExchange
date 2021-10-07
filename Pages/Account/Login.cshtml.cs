@@ -1,15 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authorization;
 using GopherExchange.Models;
 using GopherExchange.Services;
 
 namespace GopherExchange.Pages.Account
-{
+{   
+    [AllowAnonymous]
     public class LoginModel : PageModel
     {   
         private readonly loginManager _login;
@@ -32,7 +32,7 @@ namespace GopherExchange.Pages.Account
             try{
                 if(ModelState.IsValid){
                     var account = _usermanager.validateUser(Input);
-                    await _login.signIn(this.HttpContext,account);
+                    await _login.signIn(account);
                     return RedirectToPage("../Index");
                 }
                 else return Page();
