@@ -45,6 +45,10 @@ namespace GopherExchange.Services
             _logger.LogInformation("Signed out!");
         }
 
+        public Boolean IsAuthenticated(){
+            return _accessor.HttpContext.User.Identity.IsAuthenticated;
+        }
+
         private IEnumerable<Claim> getAccountClaims(Account account){
 
             List<Claim> claims = new List<Claim>();

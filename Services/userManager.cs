@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using GopherExchange.Models;
 using GopherExchange.Data;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 
 namespace GopherExchange.Services
@@ -21,10 +24,13 @@ namespace GopherExchange.Services
 
         readonly GeDbConext _context;
 
+        readonly IHttpContextAccessor _accessor;
 
-        public userManager(ILoggerFactory factory, GeDbConext context){
+
+        public userManager(ILoggerFactory factory, GeDbConext context, IHttpContextAccessor accessor){
             _logger = factory.CreateLogger<userManager>();
             _context = context;
+            _accessor = accessor;
         }
 
         public async Task <ResponseType> createAccountAsync(GenerateAccountModel cmd){
@@ -49,6 +55,46 @@ namespace GopherExchange.Services
 
             _logger.LogInformation("Account with password made successfully");
             return ResponseType.Success;
+        }
+        //TODO: Don't return Account class - possible security vunerability? Maybe a dictionary instead? Help me Randy. 
+         public  async Task<Dictionary<String,String>> getSessionAccount(){
+
+            int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var acc = await _context.Accounts.FindAsync(claim);
+
+            if(acc == null) throw new NullReferenceException();
+
+            Dictionary<String,String> sessionAccount = new Dictionary<String, String>{
+                {"Username", acc.Username},
+                {"Email", acc.Goucheremail},
+                {"Accountype", _accessor.HttpContext.User.FindFirst(ClaimTypes.Role).Value}
+            };
+
+            return sessionAccount;
+        }
+
+        public async Task editAccount(EditAccountModel cmd){
+            int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var acc = await _context.Accounts.FindAsync(claim);
+
+            if(acc == null){
+                throw new NullReferenceException();
+            }
+            acc.Username = cmd.NewUserName;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<ICollection<Wishlist>>getSessionWishlist(){
+
+            int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var acc = await _context.Accounts.FindAsync(claim);
+
+            if(acc == null) return null;
+
+            return acc.Wishlists;
         }
 
         public Account validateUser(BindingLoginModel cmd){

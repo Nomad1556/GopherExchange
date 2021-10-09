@@ -1,11 +1,10 @@
 ﻿@page
 @model IndexModel
+@inject Services.loginManager _login;
 @{
     ViewData["Title"] = "Home page";
 }
-<!--TODO: 
-        User's who are logged in should display a proper homepage!!-->
-@if (!this.HttpContext.User.Identity.IsAuthenticated)
+@if (!_login.IsAuthenticated())
 {
     <div class="container">
     <div class="d-flex flex-row justify-content-center pt-5">
@@ -28,6 +27,7 @@
 else
 {
     <div class="container">
+    <!-- TODO: fix this vunerability? -->
     <h1>Hello, @this.HttpContext.User.Identity.Name</h1>
     <div class="row">
         <form type="hidden" method="post">

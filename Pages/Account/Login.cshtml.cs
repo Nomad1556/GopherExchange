@@ -16,22 +16,28 @@ namespace GopherExchange.Pages.Account
         private readonly userManager _usermanager;
 
         private readonly ILogger _logger;
+
+        [BindProperty]
+        public BindingLoginModel Input{get;set;}
+
         public LoginModel(loginManager login, userManager usermanager, ILoggerFactory factory){
             _login = login;
             _usermanager = usermanager;
             _logger = factory.CreateLogger<LoginModel>();
         }
-        [BindProperty]
-        public BindingLoginModel Input{get;set;}
         public void OnGet()
         {
-
+            
         }
 
         public async Task<IActionResult> OnPost(){
             try{
                 if(ModelState.IsValid){
                     var account = _usermanager.validateUser(Input);
+                    if(account  == null) {
+                        //TODO: Implement error when a user fails to login.
+                        return Page();
+                    }
                     await _login.signIn(account);
                     return RedirectToPage("../Index");
                 }
