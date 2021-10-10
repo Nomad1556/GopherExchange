@@ -28,7 +28,7 @@ namespace GopherExchange
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddDbContext<GeDbConext>(options => 
+            services.AddDbContext<GeDbContext>(options => 
                 options.UseNpgsql(Configuration["DBConnection"]));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

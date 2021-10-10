@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace GopherExchange.Data
 {
-    public partial class GeDbConext : DbContext
+    public partial class GeDbContext : DbContext
     {
-        public GeDbConext()
+        public GeDbContext()
         {
         }
 
-        public GeDbConext(DbContextOptions<GeDbConext> options)
+        public GeDbContext(DbContextOptions<GeDbContext> options)
             : base(options)
         {
         }
@@ -20,7 +20,6 @@ namespace GopherExchange.Data
         public virtual DbSet<Account> Accounts { get; set; }
         public virtual DbSet<Contain> Contains { get; set; }
         public virtual DbSet<File> Files { get; set; }
-        public virtual DbSet<List> Lists { get; set; }
         public virtual DbSet<Listing> Listings { get; set; }
         public virtual DbSet<Report> Reports { get; set; }
         public virtual DbSet<Wishlist> Wishlists { get; set; }
@@ -52,13 +51,13 @@ namespace GopherExchange.Data
                     .IsRequired()
                     .HasColumnName("goucheremail");
 
+                entity.Property(e => e.Hashedpassword)
+                    .IsRequired()
+                    .HasColumnName("hashedpassword");
+
                 entity.Property(e => e.Username)
                     .IsRequired()
                     .HasColumnName("username");
-                    
-                entity.Property(e => e.HashedPassword)
-                    .IsRequired()
-                    .HasColumnName("hashedpassword");
             });
 
             modelBuilder.Entity<Contain>(entity =>
@@ -113,31 +112,6 @@ namespace GopherExchange.Data
                     .HasConstraintName("files_userid_fkey");
             });
 
-            modelBuilder.Entity<List>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("lists");
-
-                entity.Property(e => e.Listingid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("listingid");
-
-                entity.Property(e => e.Userid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("userid");
-
-                entity.HasOne(d => d.Listing)
-                    .WithMany()
-                    .HasForeignKey(d => d.Listingid)
-                    .HasConstraintName("lists_listingid_fkey");
-
-                entity.HasOne(d => d.User)
-                    .WithMany()
-                    .HasForeignKey(d => d.Userid)
-                    .HasConstraintName("lists_userid_fkey");
-            });
-
             modelBuilder.Entity<Listing>(entity =>
             {
                 entity.ToTable("listing");
@@ -150,7 +124,18 @@ namespace GopherExchange.Data
 
                 entity.Property(e => e.Description).HasColumnName("description");
 
+                entity.Property(e => e.Title).HasColumnName("title");
+
                 entity.Property(e => e.Typeid).HasColumnName("typeid");
+
+                entity.Property(e => e.Userid)
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("userid");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Listings)
+                    .HasForeignKey(d => d.Userid)
+                    .HasConstraintName("listing_userid_fkey");
             });
 
             modelBuilder.Entity<Report>(entity =>

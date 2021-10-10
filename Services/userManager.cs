@@ -22,12 +22,12 @@ namespace GopherExchange.Services
         }
         readonly ILogger _logger;
 
-        readonly GeDbConext _context;
+        readonly GeDbContext _context;
 
         readonly IHttpContextAccessor _accessor;
 
 
-        public userManager(ILoggerFactory factory, GeDbConext context, IHttpContextAccessor accessor){
+        public userManager(ILoggerFactory factory, GeDbContext context, IHttpContextAccessor accessor){
             _logger = factory.CreateLogger<userManager>();
             _context = context;
             _accessor = accessor;
@@ -40,7 +40,7 @@ namespace GopherExchange.Services
                 Username = cmd.goucherEmail.Split("@")[0],
                 Goucheremail = cmd.goucherEmail,
                 Accounttype = cmd.accountType,
-                HashedPassword = HashPassword(cmd.password)
+                Hashedpassword = HashPassword(cmd.password)
             };
                 try{
                     _logger.LogInformation("Adding...");
@@ -56,7 +56,6 @@ namespace GopherExchange.Services
             _logger.LogInformation("Account with password made successfully");
             return ResponseType.Success;
         }
-        //TODO: Don't return Account class - possible security vunerability? Maybe a dictionary instead? Help me Randy. 
          public  async Task<Dictionary<String,String>> getSessionAccount(){
 
             int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -86,6 +85,16 @@ namespace GopherExchange.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<String> getUserName(){
+             int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var acc = await _context.Accounts.FindAsync(claim);
+
+            String userName = acc.Username;
+
+            return userName;
+        }
+
         public async Task<ICollection<Wishlist>>getSessionWishlist(){
 
             int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -105,7 +114,7 @@ namespace GopherExchange.Services
 
             if (acc == null) return null;
 
-            bool verified = VerifyHashedPassword(acc.HashedPassword, cmd.password);
+            bool verified = VerifyHashedPassword(acc.Hashedpassword, cmd.password);
             
             if(!verified) return null;
             return acc;

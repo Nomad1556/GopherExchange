@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using GopherExchange.Data;
 
 
 namespace GopherExchange.Models{
