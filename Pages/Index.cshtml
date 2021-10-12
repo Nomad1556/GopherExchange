@@ -54,7 +54,7 @@
             <h3 class="my-4 font-weight-bold">Current Listings</h3>
             <div class="card-columns">
 
-                @foreach (GopherExchange.Data.Listing list in Model._listings)
+                @foreach ((GopherExchange.Data.Listing list, String email) in Model._listings)
                 {
                     <div class="card">
                         <div class="card-body">
@@ -76,7 +76,7 @@
                             </button>
 
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="@list.User">Contact</a>
+                                <a class="dropdown-item" href="mailto:@email">Contact</a>
                                 <a class="dropdown-item" href="#">Report</a>
                             </div>
                         </div>

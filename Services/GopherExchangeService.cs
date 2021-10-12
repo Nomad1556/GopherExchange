@@ -25,12 +25,23 @@ namespace GopherExchange.Services{
             _usermanager = userManager;
         }
 
-        public async Task<ICollection<Listing>> GetListingsAsyncByDate(){
-            ICollection<Listing> listings = null;
+        public async Task<List<Tuple<Listing,String>>> GetListingsAsyncByDate(){
+            List<Tuple<Listing,String>> listings = new List<Tuple<Listing,String>>();
             var fivedaysbefore = DateTime.UtcNow.AddDays(-5);
             try{
-                var x = await _context.Listings.Where(x => x.Date >= fivedaysbefore).ToListAsync();
-                listings = x;
+                var x = await _context.Listings
+                        .Where(x => x.Date >= fivedaysbefore)
+                        .Join(_context.Accounts,
+                            t => t.Userid,
+                            a => a.Userid,
+                            (t,a) => new{
+                                t,
+                                a.Goucheremail
+                            }).ToListAsync();
+                foreach(var p  in x){
+                    listings.Add(Tuple.Create(p.t,p.Goucheremail));
+                }
+                
             }catch(Exception e){
                 _logger.LogInformation(e.ToString());
             }
@@ -54,8 +65,21 @@ namespace GopherExchange.Services{
 
             acc.Listings.Add(listing);
 
+            _logger.LogInformation(acc.Listings.Count.ToString());
+
             await _context.AddAsync(listing);
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation(acc.Listings.Count.ToString());
+        }
+
+        public async Task<ICollection<Listing>> GetUserListings(){
+
+            int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            Account acc = await _context.Accounts.FindAsync(claim);
+
+            return await _context.Listings.Where(e => e.Userid == acc.Userid).ToListAsync();
         }
 
         private int DetermineListingType(string s){

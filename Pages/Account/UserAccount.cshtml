@@ -2,6 +2,7 @@
 @model UserAccountModel
 @{
     ViewData["Title"] = "Account Settings";
+
 }
 <h1 class="mt-3 mb-4"> @ViewData["Title"]</h1>
 
@@ -11,7 +12,7 @@
             <div class="col">
                 <div class="form-group">
                     <h5>Username</h5>
-                    <input class="form-control" type="text" value=@Model._account["Username"] readonly>
+                    <input class="form-control" type="text" placeholder="@Model._account["Username"]" readonly>
                 </div>
             </div>
         </div>
@@ -37,11 +38,38 @@
     </button>
     <!--TODO: Add logic to see if the user has made any listings or added anything to their wishlist-->
     <h2 class="mt-3 mb-2">Listings</h2>
-    <div class="row">
-        <div class="col">
-            <p>You don't have any listings</p>
+    @if (Model._userlisting == null || Model._userlisting.Count == 0)
+    {
+        <div class="row">
+            <div class="col">
+                <p>You don't have any listings</p>
+            </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <div class="card-columns">
+            @foreach (GopherExchange.Data.Listing p in Model._userlisting)
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@p.Title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Created:
+                            @p.Date.ToString()
+                        </h6>
+                        @{
+                            String s = "";
+                            if (p.Typeid == 1) s = "Exchange";
+                            if (p.Typeid == 2) s = "Give away";
+                        }
+                        <h6 class="card-subtitle mb-2 text-muted">Type: @s
+                        </h6>
+                        <p class-text>@p.Description</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
     <div class="row">
         <div class="col">
             <button type="button" class="btn btn-success">Make a listing</button>

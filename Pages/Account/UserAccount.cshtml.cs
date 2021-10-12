@@ -15,23 +15,29 @@ namespace GopherExchange.Pages.Account
     {
         private readonly userManager _usermanager;
 
-        public Dictionary<String,String> _account{get;private set;}
-
         private readonly loginManager _login;
 
         private readonly ILogger _logger;
 
+        private readonly GEService _service;
+
+        public Dictionary<String,String> _account{get;private set;}
+
+        public ICollection<Listing> _userlisting{get;private set;}
+
         [BindProperty]
         public EditAccountModel Input{get;set;}
-
-        public UserAccountModel(userManager usermanager, ILoggerFactory factory,loginManager login){
+        
+        public UserAccountModel(userManager usermanager, ILoggerFactory factory,loginManager login, GEService service){
             _usermanager = usermanager;
             _logger = factory.CreateLogger<UserAccountModel>();
             _login = login;
+            _service = service;
         }
         public async Task OnGet()
         {
             _account = await _usermanager.getSessionAccount();
+            _userlisting = await _service.GetUserListings();
         }
 
         public async Task <IActionResult> OnPost(){

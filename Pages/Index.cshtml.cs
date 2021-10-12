@@ -19,7 +19,7 @@ namespace GopherExchange.Pages
         private readonly ILogger<IndexModel> _logger;
         private readonly GEService _service;
 
-        public ICollection<Listing> _listings{get;private set;}
+        public List<Tuple<Listing,String>> _listings{get;private set;}
 
         [BindProperty]
         public BindingListingModel Input{get;set;}
