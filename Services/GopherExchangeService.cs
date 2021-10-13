@@ -82,6 +82,16 @@ namespace GopherExchange.Services{
             return await _context.Listings.Where(e => e.Userid == acc.Userid).ToListAsync();
         }
 
+        public async Task DeleteListingById(int id){
+
+
+            Listing list = await _context.Listings.FindAsync(id);
+
+            _context.Listings.Remove(list);
+            
+            await _context.SaveChangesAsync();
+        }
+
         private int DetermineListingType(string s){
             if(s.Equals("Exchange")) return 1;
             else if(s.Equals("Give away")) return 2;
