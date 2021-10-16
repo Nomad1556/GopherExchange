@@ -10,6 +10,8 @@ namespace GopherExchange.Data
         public int Wishlistid { get; set; }
         public int Userid { get; set; }
 
+        public string Title{get;set;}
+
         public virtual Account User { get; set; }
     }
 }

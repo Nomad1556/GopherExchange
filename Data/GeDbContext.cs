@@ -185,6 +185,9 @@ namespace GopherExchange.Data
                     .ValueGeneratedOnAdd()
                     .HasColumnName("userid");
 
+                entity.Property(e => e.Title)
+                    .HasColumnName("title");
+
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Wishlists)
                     .HasForeignKey(d => d.Userid)

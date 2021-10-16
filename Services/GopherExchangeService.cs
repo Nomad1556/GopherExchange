@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GopherExchange.Data;
-using System.Security.Cryptography;
 using GopherExchange.Models;
+using GopherExchange.JoinClasses;
+using System.Security.Cryptography;
 using System.Security.Claims;
 
 namespace GopherExchange.Services{
@@ -65,12 +66,8 @@ namespace GopherExchange.Services{
 
             acc.Listings.Add(listing);
 
-            _logger.LogInformation(acc.Listings.Count.ToString());
-
             await _context.AddAsync(listing);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation(acc.Listings.Count.ToString());
+            await _context.SaveChangesAsync();           
         }
 
         public async Task<ICollection<Listing>> GetUserListings(){
@@ -89,6 +86,68 @@ namespace GopherExchange.Services{
 
             _context.Listings.Remove(list);
             
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task MakeAWishlistAsync(BindingWishlistModel cmd){
+
+            int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+           
+            Wishlist wishlist = new Wishlist{
+                Wishlistid = GenerateListingId(),
+                Userid = claim,
+                Title = cmd.Title
+            };
+
+            _context.Add(wishlist);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<ICollection<WishlistContains>> GetWishlistsByUserAsync(){
+            int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            return await _context.Wishlists.Where(e => e.Userid == claim).Join(_context.Contains,
+                    w => w.Wishlistid,
+                    c => c.Wishlistid,
+                    (w,c) => new  {
+                        w,
+                        c
+                    }).Join(_context.Listings,
+                        c => c.c.Listingid,
+                        l => l.Listingid,
+                        (c, l) => new WishlistContains{
+                            wishlist = c.w,
+                            listing = l
+                        }
+                    ).ToListAsync();
+        }
+
+        public async Task AddToWishList(AddToWishlistBindingModel cmd){
+            Contain contain = new Contain{
+                Listingid = cmd.ListingId,
+                Wishlistid = cmd.Wishlistid
+            };
+
+            _context.Add(contain);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteWishListById(int id){
+
+            Wishlist wishlist = await _context.Wishlists.FindAsync(id);
+
+            _context.Remove(wishlist);
+
+            await _context.SaveChangesAsync();
+
+        }
+
+        public async Task DeleteFromWishlist(int wid, int lid){
+
+            Contain contain = await _context.Contains.FindAsync(wid,lid);
+
+            _context.Remove(contain);
+
             await _context.SaveChangesAsync();
         }
 
