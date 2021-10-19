@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace GopherExchange.Models{
-    
-    public class EditAccountModel{
+namespace GopherExchange.Models
+{
 
-        [Required(ErrorMessage = "Please enter a new username")]
-        public string NewUserName {get;set;}
+    public class EditAccountModel
+    {
+
+        [Required(ErrorMessage = "Please enter a new username"), StringLength(10, ErrorMessage = "New username too large")]
+        public string NewUserName { get; set; }
     }
 }
