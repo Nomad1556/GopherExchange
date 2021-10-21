@@ -7,18 +7,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using GopherExchange.Services;
 
 namespace GopherExchange.Pages.Delete
-{  
+{
     public class DeleteListingModel : PageModel
     {
         private readonly GEService _service;
 
-        public DeleteListingModel(GEService service){
+        public DeleteListingModel(GEService service)
+        {
             _service = service;
         }
         public async Task<IActionResult> OnGet(int id)
         {
-            
-            if(id != 0){
+
+            if (id != 0)
+            {
 
                 await _service.DeleteListingById(id);
 

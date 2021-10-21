@@ -19,10 +19,10 @@ namespace GopherExchange.Pages
         private readonly ILogger<IndexModel> _logger;
         private readonly GEService _service;
 
-        public List<Tuple<Listing,String>> _listings{get;private set;}
+        public List<Tuple<Listing, String>> _listings { get; private set; }
 
         [BindProperty]
-        public BindingListingModel Input{get;set;}
+        public BindingListingModel Input { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger, GEService service)
         {
@@ -35,8 +35,10 @@ namespace GopherExchange.Pages
             _listings = await _service.GetListingsAsyncByDate();
         }
 
-        public async Task<IActionResult> OnPost(){
-            if(ModelState.IsValid){
+        public async Task<IActionResult> OnPost()
+        {
+            if (ModelState.IsValid)
+            {
                 await _service.MakeAListing(Input);
                 return RedirectToPage("Index");
             }

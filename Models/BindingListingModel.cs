@@ -3,16 +3,17 @@ using System;
 
 namespace GopherExchange.Models
 {
-    public class BindingListingModel{
+    public class BindingListingModel
+    {
 
         [Required]
-        public string Title{get;set;}
+        public string Title { get; set; }
 
         [Required]
-        public string ListingType{get;set;}
+        public string ListingType { get; set; }
 
         [Required]
-        public string Description{get;set;}
+        public string Description { get; set; }
 
         public DateTime time = DateTime.UtcNow;
     }

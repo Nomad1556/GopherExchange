@@ -15,12 +15,12 @@ namespace GopherExchange.Services
 {
     public class GEService
     {
-        readonly GeDbContext _context;
-        readonly ILogger _logger;
+        private readonly GeDbContext _context;
+        private readonly ILogger _logger;
 
-        readonly userManager _usermanager;
+        private readonly userManager _usermanager;
 
-        readonly IHttpContextAccessor _accessor;
+        private readonly IHttpContextAccessor _accessor;
         public GEService(GeDbContext context, ILoggerFactory factory, IHttpContextAccessor accessor, userManager userManager)
         {
             _context = context;

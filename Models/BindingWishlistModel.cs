@@ -2,9 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GopherExchange.Models
 {
-    public class BindingWishlistModel{
-        
+    public class BindingWishlistModel
+    {
+
         [Required]
-        public string Title{get;set;}
+        public string Title { get; set; }
     }
 }
