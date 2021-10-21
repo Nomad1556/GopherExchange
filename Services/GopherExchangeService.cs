@@ -127,26 +127,21 @@ namespace GopherExchange.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<ICollection<WishlistContains>> GetWishlistsByUserAsync()
+        public async Task<List<Tuple<Listing, String>>> GetListingsInWishlistById(int id)
         {
-            int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var contains = await _context.Contains.Where(e => e.Wishlistid == id).ToListAsync();
 
-            return await _context.Wishlists.Where(e => e.Userid == claim).Join(_context.Contains,
-                    w => w.Wishlistid,
-                    c => c.Wishlistid,
-                    (w, c) => new
-                    {
-                        w,
-                        c
-                    }).Join(_context.Listings,
-                        c => c.c.Listingid,
-                        l => l.Listingid,
-                        (c, l) => new WishlistContains
-                        {
-                            wishlist = c.w,
-                            listing = l
-                        }
-                    ).ToListAsync();
+            List<Tuple<Listing, String>> list = new List<Tuple<Listing, String>>();
+
+            foreach (Contain c in contains)
+            {
+                Listing l = await _context.Listings.FirstOrDefaultAsync(e => e.Listingid == c.Listingid);
+                if (l == null) continue;
+                String Goucheremail = await _context.Accounts.Where(e => e.Userid == l.Userid).Select(e => e.Goucheremail).SingleOrDefaultAsync();
+                list.Add(Tuple.Create(l, Goucheremail));
+            }
+
+            return list;
         }
 
         public async Task<ICollection<Wishlist>> GetUserWishlistAsync()
@@ -154,6 +149,11 @@ namespace GopherExchange.Services
             int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             return await _context.Wishlists.Where(e => e.Userid == claim).ToListAsync();
+        }
+
+        public async Task<Wishlist> GetWishlistById(int id)
+        {
+            return await _context.Wishlists.FirstOrDefaultAsync(e => e.Wishlistid == id);
         }
 
         public async Task AddToWishList(AddToWishlistBindingModel cmd)
@@ -182,7 +182,7 @@ namespace GopherExchange.Services
         public async Task DeleteFromWishlist(int wid, int lid)
         {
 
-            Contain contain = await _context.Contains.FindAsync(wid, lid);
+            Contain contain = await _context.Contains.FindAsync(lid, wid);
 
             _context.Remove(contain);
 

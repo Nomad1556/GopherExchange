@@ -1,4 +1,57 @@
 ﻿@page
 @model ManageWishlistModel
 @{
+    ViewData["Title"] = "Manage your Wishlist";
 }
+
+<h1 class="mt-3 mb-2"> Manage Wishlist @Model._wishlistToManage.Title</h1>
+
+<div class="container">
+    @if (Model._listings == null || Model._listings.Count == 0)
+    {
+        <h2 class="text-center mt-2"> You have no added any listing to this wishlist</h2>
+    }
+    else
+    {
+        <div class="card-columns">
+
+            @foreach ((GopherExchange.Data.Listing list, String email) in Model._listings)
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@list.Title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Created:
+                            @list.Date.ToString()
+                        </h6>
+                        @{
+                            String s = "";
+                            if (list.Typeid == 1) s = "Exchange";
+                            if (list.Typeid == 2) s = "Give away";
+                        }
+                        <h6 class="card-subtitle mb-2 text-muted">Type: @s
+                        </h6>
+                        <p class-text>@list.Description</p>
+                        <button class="btn btn-secondary dropdown-toggle" role="button" id="dropdownMenuLink"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Menu
+                        </button>
+
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="mailto:@email">Contact</a>
+                            <a class="dropdown-item" href="#">Report</a>
+                            @{
+                                var parms = new Dictionary<string, string>
+                                {
+                                {"wid", Model._wishlistToManage.Wishlistid.ToString()},
+                                {"lid", list.Listingid.ToString()}
+                                };
+                            }
+                            <a class="dropdown-item" asp-page="../Delete/DeleteFromWishlist" asp-all-route-data=parms>Remove
+                                from wishlist</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

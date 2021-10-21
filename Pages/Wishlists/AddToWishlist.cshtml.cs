@@ -26,14 +26,12 @@ namespace GopherExchange.Pages.Wishlists
         {
             _service = service;
         }
-        public async Task OnGet(int listingid)
+        public async Task OnGet(int id)
         {
 
-            listingToAdd = await _service.GetListingById(listingid);
+            listingToAdd = await _service.GetListingById(id);
 
             _userwishlist = await _service.GetUserWishlistAsync();
-
-            if (_userwishlist == null || _userwishlist.Count == 0) RedirectToPage("../Index");
 
         }
 

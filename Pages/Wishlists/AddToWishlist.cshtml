@@ -1,4 +1,4 @@
-﻿@page "{listingid: int}"
+﻿@page
 @model AddToWishlistModel
 @{
     ViewData["Title"] = "Add to your Wishlist";
@@ -6,21 +6,36 @@
 
 <h1 class="mt-3 mb-2"> @ViewData["Title"]</h1>
 
-<h3 class="mt-1 mb-1">Select which wishlist you want addd @Model.listingToAdd.Title to</h3>
-
 <div class="container">
-    <div class="card-columns">
-        @foreach (GopherExchange.Data.Wishlist w in Model._userwishlist)
-        {
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">@w.Title</h5>
-                    <form method="post" type="hidden"></form>
-                    <input asp-for="Input.Wishlistid" type="hidden" value="@w.Wishlistid">
-                    <input asp-for="Input.ListingId" type="hidden" value="@Model.listingToAdd.Listingid">
-                    <button type="submit" class="btn btn-primary mt-3">Submit</button>
-                </div>
+
+
+
+    @if (Model._userwishlist == null || Model._userwishlist.Count == 0)
+    {
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="text-center mt-3">You do not have any Wishlists!</h3>
             </div>
-        }
-    </div>
+        </div>
+    }
+    else
+    {
+        <h3 class="mt-1 mb-1">Select which wishlist you want add @Model.listingToAdd.Title to</h3>
+
+        <div class="card-columns">
+            @foreach (GopherExchange.Data.Wishlist w in Model._userwishlist)
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@w.Title</h5>
+                        <form method="post" type="hidden">
+                            <input asp-for="Input.Wishlistid" type="hidden" value="@w.Wishlistid">
+                            <input asp-for="Input.ListingId" type="hidden" value="@Model.listingToAdd.Listingid">
+                            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>

@@ -62,7 +62,7 @@ namespace GopherExchange.Data
 
             modelBuilder.Entity<Contain>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.Listingid, e.Wishlistid });
 
                 entity.ToTable("contains");
 
