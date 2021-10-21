@@ -1,0 +1,198 @@
+﻿@page
+@model UserAccountModel
+@{
+    ViewData["Title"] = "Account Settings";
+
+}
+<h1 class="mt-3 mb-4"> @ViewData["Title"]</h1>
+
+<div class="container">
+    <div class="list-group">
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <h5>Username</h5>
+                    <input class="form-control" type="text" placeholder="@Model._account["Username"]" readonly>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <h5>Goucher email</h5>
+                    <input class="form-control" type="text" placeholder=@Model._account["Email"] readonly>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <h5>Account type</h5>
+                    <input class="form-control" type="text" placeholder=@Model._account["Accountype"] readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#EditAccount">
+        Edit Account
+    </button>
+    <!--TODO: Add logic to see if added anything to their wishlist-->
+    <h2 class="mt-3 mb-2">Listings</h2>
+    @if (Model._userlisting == null || Model._userlisting.Count == 0)
+    {
+        <div class="row">
+            <div class="col">
+                <p>You don't have any listings</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card-columns">
+            @foreach (GopherExchange.Data.Listing p in Model._userlisting)
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@p.Title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Created:
+                            @p.Date.ToString()
+                        </h6>
+                        @{
+                            String s = "";
+                            if (p.Typeid == 1) s = "Exchange";
+                            if (p.Typeid == 2) s = "Give away";
+                        }
+                        <h6 class="card-subtitle mb-2 text-muted">Type: @s
+                        </h6>
+                        <p class-text>@p.Description</p>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-@p.Listingid">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+                <!-- Modal for Delete Listings -->
+                <div class="modal fade" id="delete-@p.Listingid" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Delete @p.Title</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-danger" role="alert">
+                                    Warning you will delete this listing! This action cannot be undone!
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <a class="btn btn-danger" asp-page="../Delete/DeleteListing"
+                            asp-route-id=@p.Listingid>Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    <div class="row">
+        <div class="col">
+            <a class="btn btn-secondary" asp-page="../Index">Make a listing</a>
+        </div>
+    </div>
+
+    <h2 class="mt-3 mb-1">Wishlist</h2>
+    @if (Model._userwishlist == null || Model._userwishlist.Count == 0)
+    {
+        <div class="row">
+            <div class="col">
+                <p>You don't have any listings added to your Wishlist</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card-columns">
+            @foreach (GopherExchange.Data.Wishlist w in Model._userwishlist)
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@w.Title</h5>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-@w.Wishlistid">
+                            Delete
+                        </button>
+                        <a class="btn btn-primary" asp-page="../Wishlists/ManageWishlist" asp-route-id=@w.Wishlistid>Manage</a>
+                    </div>
+                </div>
+
+                <!-- Modal for Delete Wishlists -->
+                <div class="modal fade" id="delete-@w.Wishlistid" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Delete @w.Title</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-danger" role="alert">
+                                    Warning you will delete this wishlist! This action cannot be undone!
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <a class="btn btn-danger" asp-page="../Delete/DeleteWishlist"
+                            asp-route-id=@w.Wishlistid>Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    <div class="row">
+        <div class="col mt-1">
+            <a type="button" class="btn btn-secondary" asp-page="../Wishlists/CreateWishlist">
+                Make a Wishlist
+            </a>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col mt-3">
+            <form type="hidden" method="post">
+                <button type="submit" class="btn btn-warning mt-1" asp-page-handler="Logout">Sign out</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Account Edit -->
+    <div class="modal fade" id="EditAccount" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Account Information</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" id="editaccount">
+                        <div class="form-group">
+                            <label for="username1">New Username</label>
+                            <input asp-for="Input.NewUserName" class="form-control" id="username1"
+                                placeholder=@Model._account["Username"]>
+                            <span asp-validation-for="Input.NewUserName" class="text-danger"></span>
+                            <small>At the moment it is impossible to change email and password</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" form="editaccount" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

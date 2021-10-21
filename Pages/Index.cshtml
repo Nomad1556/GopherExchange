@@ -1,39 +1,140 @@
 ﻿@page
 @model IndexModel
+@inject Services.loginManager _login;
+@inject Services.userManager _usermanager;
 @{
     ViewData["Title"] = "Home page";
 }
-<!--TODO: 
-        User's who are logged in should display a proper homepage!!-->
-@if (!this.HttpContext.User.Identity.IsAuthenticated)
-{
-    <div class="container">
-    <div class="d-flex flex-row justify-content-center pt-5">
-        <div class="alert alert-warning w-75 " role="alert">
-            <h4 class="alert-heading">Warning! You are not logged in!</h4>
-            <p>This website is by Goucher students for Goucher students. To gain full access please log in.
-                If you are a Goucher student and don’t have an account, please register first. </p>
-            <hr>
-            <p class="mb-0">Access to this website is forbidden to those outside the Goucher community.
-            </p>
-            <p class="my-0">Questions? Please email the administrator. </p>
+<div class="container">
+    @if (!_login.IsAuthenticated())
+    {
+        <div class="d-flex flex-row justify-content-center pt-5">
+            <div class="alert alert-warning w-75 " role="alert">
+                <h4 class="alert-heading">Warning! You are not logged in!</h4>
+                <p>This website is by Goucher students for Goucher students. To gain full access please log in.
+                    If you are a Goucher student and don’t have an account, please register first. </p>
+                <hr>
+                <p class="mb-0">Access to this website is forbidden to those outside the Goucher community.
+                </p>
+                <p class="my-0">Questions? Please email the administrator. </p>
+            </div>
         </div>
-    </div>
-    <div class="col-md-12 text-center">
-        <a class="btn btn-primary btn-lg mr-5" asp-page="./Account/Login">Login</a>
-        <a class="btn btn-secondary btn-lg ml-5" asp-page="./Account/Registration">Register</a>
-    </div>
-</div>
-}
-else
-{
-    <div class="container">
-    <h1>Hello, @this.HttpContext.User.Identity.Name</h1>
-    <div class="row">
-        <form type="hidden" method="post">
-            <button type="submit" class="btn-danger btn-lg mt-5">Sign out</button>
-        </form>
-    </div>
+        <div class="col-md-12 text-center">
+            <a class="btn btn-primary btn-lg mr-5" asp-page="./Account/Login">Login</a>
+            <a class="btn btn-secondary btn-lg ml-5" asp-page="./Account/Registration">Register</a>
+        </div>
+
+    }
+    else
+    {
+        String username = await _usermanager.getUserName();
+        <h1 class="mt-3 mb-4">Hello @username,</h1>
+        @if (Model._listings == null || Model._listings.Count == 0)
+        {
+            <div class="row">
+                <div class="col">
+                    <h2 class="mt-3 mb-3">Hmm...it's quiet...too quiet</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p class="mb-3">Why not add a listing?</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addListing">
+                        Add new listing
+                    </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <h3 class="my-4 font-weight-bold">Current Listings</h3>
+            <div class="card-columns">
+
+                @foreach ((GopherExchange.Data.Listing list, String email) in Model._listings)
+                {
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@list.Title</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Created:
+                                @list.Date.ToString()
+                            </h6>
+                            @{
+                                String s = "";
+                                if (list.Typeid == 1) s = "Exchange";
+                                if (list.Typeid == 2) s = "Give away";
+                            }
+                            <h6 class="card-subtitle mb-2 text-muted">Type: @s
+                            </h6>
+                            <p class-text>@list.Description</p>
+                            <button class="btn btn-secondary dropdown-toggle" role="button" id="dropdownMenuLink"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Menu
+                            </button>
+
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <a class="dropdown-item" href="mailto:@email">Contact</a>
+                                <a class="dropdown-item" href="#">Report</a>
+                                <a class="dropdown-item" asp-page="Wishlists/AddToWishlist" asp-route-id=@list.Listingid>Add to
+                                    a wishlist</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addListing">
+                        Add new listing
+                    </button>
+                </div>
+            </div>
+        }
+
+    }
 </div>
 
-}
+<!-- Modal -->
+<!-- TODO: Add span validation -->
+<div class="modal fade" id="addListing" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add a new listing</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="alert alert-warning">
+                Be careful not to include sensitive information in the description
+            </div>
+            <div class="modal-body">
+                <form method="post" id="makelisting">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input asp-for="Input.Title" class="form-control" placeholder="Giving away books!">
+                    </div>
+                    <div class="form-group">
+                        <label>Type of listing</label>
+                        <select asp-for="Input.ListingType" class="form-control">
+                            <option>Exchange</option>
+                            <option>Give away</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea asp-for="Input.Description" class="form-control"
+                            placeholder="Giving away books in Welsh for CS220!" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" form="makelisting" class="btn btn-success">Make a listing</button>
+            </div>
+        </div>
+    </div>
+</div>

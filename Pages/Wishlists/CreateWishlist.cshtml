@@ -1,0 +1,20 @@
+﻿@page
+@model CreateWishlistModel
+@{
+    ViewData["Title"] = "Create Wishlist";
+}
+<h1 class="mt-3 mb-4"> Create a new Wishlist</h1>
+
+<div class="container">
+    <div class="col-md-9">
+        <form method="post">
+            <div class="form-group">
+                <h3>Wishlist Title</h5>
+                    <input asp-for="Input.Title" class="form-control">
+                    <small class="form-text text-muted">Give your new wishlist a title!</small>
+                    <span asp-validation-for="Input.Title" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        </form>
+    </div>
+</div>

@@ -12,38 +12,42 @@
 <hr>
 
 <div class="container">
-    <div class="col-md-9">
-        <form method="post">
-            <div class="form-group">
-                <label for="Email1">Email address</label>
-                <input asp-for="Input.goucherEmail" class="form-control" id="Email1" aria-describedby="emailHelp"
-                    placeholder="name@goucher.edu or name@mail.goucher.edu">
-                <small id="emailHelp" class="form-text text-muted">We'll show your email so that other Goucher students
-                    can
-                    contact you about your listings.</small>
-                <span asp-validation-for="Input.goucherEmail" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label for="Password1">Password</label>
-                <input asp-for="Input.password" class="form-control" id="Password1" placeholder="Password">
-                <span asp-validation-for="Input.password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label for="Password2">Confirm Password</label>
-                <input asp-for="Input.confirmPassword" class="form-control" id="Password2"
-                    placeholder="Confirm Password">
-                <span asp-validation-for="Input.confirmPassword" class="text-danger"></span>
-            </div>
-            <div class="form-check">
-                <input asp-for="Input.agreedToServiceAndPrivacy" type="checkbox" class="form-check-input" id="Check1">
-                <label class="form-check-label" for="Check1">I agree to the <a asp-page="./Privacy">Terms of
-                        Service and Privacy Policy</a></label>
-                <div class="row">
-                    <span asp-validation-for="Input.agreedToServiceAndPrivacy" class="text-danger"></span>
+    <div class="row">
+        <div class="col md-9">
+            <form method="post">
+                <div class="form-group">
+                    <label for="Email1">Email address</label>
+                    <input asp-for="Input.goucherEmail" class="form-control" id="Email1" aria-describedby="emailHelp"
+                        placeholder="name@goucher.edu or name@mail.goucher.edu">
+                    <small id="emailHelp" class="form-text text-muted">We'll show your email so that other Goucher
+                        students
+                        can
+                        contact you about your listings.</small>
+                    <span asp-validation-for="Input.goucherEmail" class="text-danger"></span>
                 </div>
-            </div>
-            <input type="hidden" asp-for="Input.accountType" value="1">
-            <button type="submit" class="btn btn-primary mt-3">Submit</button>
-        </form>
+                <div class="form-group">
+                    <label for="Password1">Password</label>
+                    <input asp-for="Input.password" class="form-control" id="Password1" placeholder="Password">
+                    <span asp-validation-for="Input.password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label for="Password2">Confirm Password</label>
+                    <input asp-for="Input.confirmPassword" class="form-control" id="Password2"
+                        placeholder="Confirm Password">
+                    <span asp-validation-for="Input.confirmPassword" class="text-danger"></span>
+                </div>
+                <div class="form-check">
+                    <input asp-for="Input.agreedToServiceAndPrivacy" type="checkbox" class="form-check-input"
+                        id="Check1">
+                    <label class="form-check-label" for="Check1">I agree to the <a asp-page="../Privacy">Terms of
+                            Service and Privacy Policy</a></label>
+                    <div class="row">
+                        <span asp-validation-for="Input.agreedToServiceAndPrivacy" class="text-danger"></span>
+                    </div>
+                </div>
+                <input type="hidden" asp-for="Input.accountType" value="1">
+                <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </form>
+        </div>
     </div>
 </div>

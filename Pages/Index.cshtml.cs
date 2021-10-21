@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using GopherExchange.Services;
-using System.Security.Claims;
+using GopherExchange.Data;
+using GopherExchange.Models;
 
 namespace GopherExchange.Pages
 {
@@ -18,23 +19,30 @@ namespace GopherExchange.Pages
         private readonly ILogger<IndexModel> _logger;
         private readonly GEService _service;
 
-        private readonly loginManager _login;
+        public List<Tuple<Listing, String>> _listings { get; private set; }
 
-        public IndexModel(ILogger<IndexModel> logger, GEService service, loginManager login)
+        [BindProperty]
+        public BindingListingModel Input { get; set; }
+
+        public IndexModel(ILogger<IndexModel> logger, GEService service)
         {
             _logger = logger;
             _service = service;
-            _login = login;
         }
 
-        public void OnGet()
+        public async Task OnGet()
         {
-
+            _listings = await _service.GetListingsAsyncByDate();
         }
 
-        public async Task<IActionResult> OnPost(){
-            await _login.signOut();
-            return RedirectToPage("./Index");
+        public async Task<IActionResult> OnPost()
+        {
+            if (ModelState.IsValid)
+            {
+                await _service.MakeAListing(Input);
+                return RedirectToPage("Index");
+            }
+            else return Page();
         }
     }
 }
