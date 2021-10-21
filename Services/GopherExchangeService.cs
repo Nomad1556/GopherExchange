@@ -102,10 +102,18 @@ namespace GopherExchange.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<Listing> GetListingById(int id)
+        {
+
+            return await _context.Listings.FirstOrDefaultAsync(e => e.Listingid == id);
+        }
+
         public async Task MakeAWishlistAsync(BindingWishlistModel cmd)
         {
 
             int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var acc = await _context.Accounts.FirstOrDefaultAsync(e => e.Userid == claim);
 
             Wishlist wishlist = new Wishlist
             {
@@ -113,6 +121,7 @@ namespace GopherExchange.Services
                 Userid = claim,
                 Title = cmd.Title
             };
+            acc.Wishlists.Add(wishlist);
 
             _context.Add(wishlist);
             await _context.SaveChangesAsync();
