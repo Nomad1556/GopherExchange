@@ -87,7 +87,7 @@ namespace GopherExchange.Data
 
             modelBuilder.Entity<File>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.Userid, e.Reportid });
 
                 entity.ToTable("files");
 
@@ -119,8 +119,8 @@ namespace GopherExchange.Data
                 entity.Property(e => e.Listingid).HasColumnName("listingid");
 
                 entity.Property(e => e.Date)
-                    .HasColumnType("timestamp with time zone")
-                    .HasColumnName("date");
+                            .HasColumnType("timestamp with time zone")
+                            .HasColumnName("date");
 
                 entity.Property(e => e.Description).HasColumnName("description");
 
@@ -129,13 +129,13 @@ namespace GopherExchange.Data
                 entity.Property(e => e.Typeid).HasColumnName("typeid");
 
                 entity.Property(e => e.Userid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("userid");
+                            .ValueGeneratedOnAdd()
+                            .HasColumnName("userid");
 
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.Listings)
-                    .HasForeignKey(d => d.Userid)
-                    .HasConstraintName("listing_userid_fkey");
+                            .WithMany(p => p.Listings)
+                            .HasForeignKey(d => d.Userid)
+                            .HasConstraintName("listing_userid_fkey");
             });
 
             modelBuilder.Entity<Report>(entity =>
@@ -147,32 +147,32 @@ namespace GopherExchange.Data
                 entity.Property(e => e.Action).HasColumnName("action");
 
                 entity.Property(e => e.Actiondate)
-                    .HasColumnType("timestamp with time zone")
-                    .HasColumnName("actiondate");
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("actiondate");
 
                 entity.Property(e => e.Adminid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("adminid");
+                                .ValueGeneratedOnAdd()
+                                .HasColumnName("adminid");
 
                 entity.Property(e => e.Description)
-                    .IsRequired()
-                    .HasColumnName("description");
+                                .IsRequired()
+                                .HasColumnName("description");
 
                 entity.Property(e => e.Incidentdate)
-                    .HasColumnType("timestamp with time zone")
-                    .HasColumnName("incidentdate");
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("incidentdate");
 
                 entity.Property(e => e.Incidentid).HasColumnName("incidentid");
 
                 entity.Property(e => e.Listingid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("listingid");
+                                .ValueGeneratedOnAdd()
+                                .HasColumnName("listingid");
 
                 entity.HasOne(d => d.Listing)
-                    .WithMany(p => p.Reports)
-                    .HasForeignKey(d => d.Listingid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("report_listingid_fkey");
+                                .WithMany(p => p.Reports)
+                                .HasForeignKey(d => d.Listingid)
+                                .OnDelete(DeleteBehavior.ClientSetNull)
+                                .HasConstraintName("report_listingid_fkey");
             });
 
             modelBuilder.Entity<Wishlist>(entity =>
