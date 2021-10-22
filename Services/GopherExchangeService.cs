@@ -189,6 +189,20 @@ namespace GopherExchange.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<Tuple<Listing, String>>> FindListingByTitle(string title)
+        {
+            List<Tuple<Listing, String>> listings = new List<Tuple<Listing, String>>();
+
+            var p = await _context.Listings.Where(e => e.Title.Contains(title)).ToListAsync();
+
+            foreach (Listing l in p)
+            {
+                String Goucheremail = await _context.Accounts.Where(e => e.Userid == l.Userid).Select(e => e.Goucheremail).SingleOrDefaultAsync();
+                listings.Add(Tuple.Create(l, Goucheremail));
+            }
+            return listings;
+        }
+
         private int DetermineListingType(string s)
         {
             if (s.Equals("Exchange")) return 1;
