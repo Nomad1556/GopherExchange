@@ -7,6 +7,7 @@ using GopherExchange.Data;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Claims;
 
 
@@ -15,6 +16,7 @@ namespace GopherExchange.Services
     public class userManager
     {
 
+        private readonly int _iterations = 10000;
 
         public enum ResponseType
         {
@@ -44,7 +46,7 @@ namespace GopherExchange.Services
                 Username = cmd.goucherEmail.Split("@")[0],
                 Goucheremail = cmd.goucherEmail,
                 Accounttype = cmd.accountType,
-                Hashedpassword = HashPassword(cmd.password)
+                Hashedpassword = Convert.ToBase64String(HashPassword(cmd.password))
             };
             try
             {
@@ -127,29 +129,100 @@ namespace GopherExchange.Services
 
             if (acc == null) return null;
 
-            bool verified = VerifyHashedPassword(acc.Hashedpassword, cmd.password);
+            bool verified = VerifyHashedPassword(Convert.FromBase64String(acc.Hashedpassword), cmd.password);
 
             if (!verified) return null;
             return acc;
         }
-        private string HashPassword(string password)
+        private byte[] HashPassword(string password)
         {
-            byte[] salt;
-            byte[] buffer2;
-            if (password == null) return "No password";
+            int saltSize = 128 / 8;
+            int numBytesRequested = 256 / 8;
 
-            // Salt and hash the password. Store them for writing as a string.
-            using (Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, 0x10, 0x3e8))
+            byte[] salt = new byte[saltSize];
+            using (var rngCsp = new RNGCryptoServiceProvider())
             {
-                salt = bytes.Salt;
-                buffer2 = bytes.GetBytes(0x20);
+                rngCsp.GetNonZeroBytes(salt);
             }
+            byte[] subkey = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA256, _iterations, numBytesRequested);
 
-            // Store the salt and the hash, one after another, into a base64-converted string.
-            byte[] dst = new byte[0x31];
-            Buffer.BlockCopy(salt, 0, dst, 1, 0x10);
-            Buffer.BlockCopy(buffer2, 0, dst, 0x11, 0x20);
-            return Convert.ToBase64String(dst);
+            var outputBytes = new byte[13 + salt.Length + subkey.Length];
+            outputBytes[0] = 0x01; // format marker
+            WriteNetworkByteOrder(outputBytes, 1, (uint)KeyDerivationPrf.HMACSHA256);
+            WriteNetworkByteOrder(outputBytes, 5, (uint)_iterations);
+            WriteNetworkByteOrder(outputBytes, 9, (uint)saltSize);
+            Buffer.BlockCopy(salt, 0, outputBytes, 13, salt.Length);
+            Buffer.BlockCopy(subkey, 0, outputBytes, 13 + saltSize, subkey.Length);
+            return outputBytes;
+        }
+
+        private bool VerifyHashedPassword(byte[] hashedPassword, string password)
+        {
+            try
+            {
+                // Read header information
+                KeyDerivationPrf prf = (KeyDerivationPrf)ReadNetworkByteOrder(hashedPassword, 1);
+                int iterCount = (int)ReadNetworkByteOrder(hashedPassword, 5);
+                int saltLength = (int)ReadNetworkByteOrder(hashedPassword, 9);
+
+                // Read the salt: must be >= 128 bits
+                if (saltLength < 128 / 8)
+                {
+                    _logger.LogInformation("Wrong salt size");
+                    return false;
+                }
+                byte[] salt = new byte[saltLength];
+                Buffer.BlockCopy(hashedPassword, 13, salt, 0, salt.Length);
+
+                // Read the subkey (the rest of the payload): must be >= 128 bits
+                int subkeyLength = hashedPassword.Length - 13 - salt.Length;
+                if (subkeyLength < 128 / 8)
+                {
+                    _logger.LogInformation("Wrong subkey size");
+                    return false;
+                }
+                byte[] expectedSubkey = new byte[subkeyLength];
+                Buffer.BlockCopy(hashedPassword, 13 + salt.Length, expectedSubkey, 0, expectedSubkey.Length);
+
+                // Hash the incoming password and verify it
+                byte[] actualSubkey = KeyDerivation.Pbkdf2(password, salt, prf, iterCount, subkeyLength);
+
+                return CryptographicOperations.FixedTimeEquals(actualSubkey, expectedSubkey);
+            }
+            catch
+            {
+                _logger.LogInformation("Error happened");
+                // This should never occur except in the case of a malformed payload, where
+                // we might go off the end of the array. Regardless, a malformed payload
+                // implies verification failed.
+                return false;
+            }
+        }
+        private bool ByteArraysEqual(byte[] a, byte[] b)
+        {
+            if (a == null && b == null) return true;
+            if (a == null || b == null || a.Length != b.Length) return false;
+
+            bool areSame = true;
+            for (int i = 0; i < a.Length; i++)
+            {
+                areSame &= (a[i] == b[i]);
+            }
+            return areSame;
+        }
+        private static uint ReadNetworkByteOrder(byte[] buffer, int offset)
+        {
+            return ((uint)(buffer[offset + 0]) << 24)
+                | ((uint)(buffer[offset + 1]) << 16)
+                | ((uint)(buffer[offset + 2]) << 8)
+                | ((uint)(buffer[offset + 3]));
+        }
+        private void WriteNetworkByteOrder(byte[] buffer, int offset, uint value)
+        {
+            buffer[offset + 0] = (byte)(value >> 24);
+            buffer[offset + 1] = (byte)(value >> 16);
+            buffer[offset + 2] = (byte)(value >> 8);
+            buffer[offset + 3] = (byte)(value >> 0);
         }
 
         private int GenerateAccountNumber()
@@ -165,45 +238,6 @@ namespace GopherExchange.Services
             int x = BitConverter.ToInt32(accNumber);
             if (x < 0) return -x;
             return x;
-        }
-
-        private bool VerifyHashedPassword(string HashedPassword, string password)
-        {
-            byte[] buffer4;
-
-            if (HashedPassword == null) return false;
-            if (password == null) return false;
-
-            // Verify that the hashed password is in the correct format.
-            byte[] src = Convert.FromBase64String(HashedPassword);
-            if ((src.Length != 0x31) || (src[0] != 0)) return false;
-
-            // Split the salt and the hash.
-            byte[] dst = new byte[0x10];
-            Buffer.BlockCopy(src, 1, dst, 0, 0x10);
-            byte[] buffer3 = new byte[0x20];
-            Buffer.BlockCopy(src, 0x11, buffer3, 0, 0x20);
-
-            // Run them through the algorithm to get the hashed password.
-            using (Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, dst, 0x3e8))
-            {
-                buffer4 = bytes.GetBytes(0x20);
-            }
-
-            // Verify the hashes are the same.
-            return ByteArraysEqual(buffer3, buffer4);
-        }
-        private bool ByteArraysEqual(byte[] a, byte[] b)
-        {
-            if (a == null && b == null) return true;
-            if (a == null || b == null || a.Length != b.Length) return false;
-
-            bool areSame = true;
-            for (int i = 0; i < a.Length; i++)
-            {
-                areSame &= (a[i] == b[i]);
-            }
-            return areSame;
         }
     }
 }
