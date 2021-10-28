@@ -127,6 +127,31 @@ namespace GopherExchange.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task MakeAReport(BindingReportModel cmd)
+        {
+            Report report = new Report
+            {
+                Reportid = GenerateReportId(),
+                Listingid = cmd.Listingid,
+                Adminid = 0,
+                Description = cmd.Description,
+                Incidentdate = cmd.Incidentdate,
+                IncidentType = cmd.IncidentType,
+                Action = "None",
+                Actiondate = null,
+            };
+
+            Flag flag = new Flag
+            {
+                Listingid = cmd.Listingid,
+                Reportid = report.Reportid
+            };
+
+            await _context.Reports.AddAsync(report);
+            await _context.Flags.AddAsync(flag);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<List<Tuple<Listing, String>>> GetListingsInWishlistById(int id)
         {
             var contains = await _context.Contains.Where(e => e.Wishlistid == id).ToListAsync();
@@ -210,18 +235,30 @@ namespace GopherExchange.Services
             else return -1;
         }
 
+        private int GenerateReportId()
+        {
+            byte[] reportId = new byte[8];
+            using (RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider())
+            {
+
+                rngCsp.GetNonZeroBytes(reportId);
+            }
+
+            return Convert.ToInt32(reportId);
+        }
+
         private int GenerateListingId()
         {
 
-            byte[] accNumber = new byte[5];
+            byte[] listingId = new byte[5];
 
             using (RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider())
             {
 
-                rngCsp.GetBytes(accNumber);
+                rngCsp.GetNonZeroBytes(listingId);
             }
 
-            int x = BitConverter.ToInt32(accNumber);
+            int x = BitConverter.ToInt32(listingId);
             if (x < 0) return -x;
             return x;
         }

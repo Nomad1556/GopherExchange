@@ -5,12 +5,12 @@ using System.Collections.Generic;
 
 namespace GopherExchange.Data
 {
-    public partial class File
+    public partial class Flag
     {
-        public int Userid { get; set; }
+        public int Listingid { get; set; }
         public int Reportid { get; set; }
 
         public virtual Report Report { get; set; }
-        public virtual Account User { get; set; }
+        public virtual Listing Listing { get; set; }
     }
 }

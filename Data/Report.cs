@@ -12,7 +12,8 @@ namespace GopherExchange.Data
         public int Adminid { get; set; }
         public string Description { get; set; }
         public DateTime Incidentdate { get; set; }
-        public int Incidentid { get; set; }
+
+        public string IncidentType { get; set; }
         public string Action { get; set; }
         public DateTime? Actiondate { get; set; }
 

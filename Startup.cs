@@ -28,15 +28,17 @@ namespace GopherExchange
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddDbContext<GeDbContext>(options => 
-                options.UseNpgsql(Configuration["DBConnection"]));
+            services.AddDbContext<GeDbContext>(options =>
+                options.UseNpgsql(Configuration["HerokuDB"]));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => {
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            {
                 options.LoginPath = "/Index";
             });
 
-            services.AddAuthentication(options =>{
+            services.AddAuthentication(options =>
+            {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             });
             services.AddHttpContextAccessor();
@@ -69,7 +71,7 @@ namespace GopherExchange
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages().RequireAuthorization();
-                
+
             });
         }
     }

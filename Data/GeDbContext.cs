@@ -19,7 +19,7 @@ namespace GopherExchange.Data
 
         public virtual DbSet<Account> Accounts { get; set; }
         public virtual DbSet<Contain> Contains { get; set; }
-        public virtual DbSet<File> Files { get; set; }
+        public virtual DbSet<Flag> Flags { get; set; }
         public virtual DbSet<Listing> Listings { get; set; }
         public virtual DbSet<Report> Reports { get; set; }
         public virtual DbSet<Wishlist> Wishlists { get; set; }
@@ -28,7 +28,7 @@ namespace GopherExchange.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql("Name=DBConnection");
+                optionsBuilder.UseNpgsql("Name=HerokuDB");
             }
         }
 
@@ -85,31 +85,31 @@ namespace GopherExchange.Data
                     .HasConstraintName("contains_wishlistid_fkey");
             });
 
-            modelBuilder.Entity<File>(entity =>
+            modelBuilder.Entity<Flag>(entity =>
             {
-                entity.HasKey(e => new { e.Userid, e.Reportid });
+                entity.ToTable("flags");
 
-                entity.ToTable("files");
+                entity.HasKey(e => new { e.Listingid, e.Reportid });
 
                 entity.Property(e => e.Reportid)
                     .ValueGeneratedOnAdd()
                     .HasColumnName("reportid");
 
-                entity.Property(e => e.Userid)
+                entity.Property(e => e.Listingid)
                     .ValueGeneratedOnAdd()
-                    .HasColumnName("userid");
+                    .HasColumnName("listingid");
 
                 entity.HasOne(d => d.Report)
                     .WithMany()
                     .HasForeignKey(d => d.Reportid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("files_reportid_fkey");
+                    .HasConstraintName("flags_reportid_fkey");
 
-                entity.HasOne(d => d.User)
+                entity.HasOne(d => d.Listing)
                     .WithMany()
-                    .HasForeignKey(d => d.Userid)
+                    .HasForeignKey(d => d.Listingid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("files_userid_fkey");
+                    .HasConstraintName("flags_listingid_fkey");
             });
 
             modelBuilder.Entity<Listing>(entity =>
@@ -162,7 +162,7 @@ namespace GopherExchange.Data
                                 .HasColumnType("timestamp with time zone")
                                 .HasColumnName("incidentdate");
 
-                entity.Property(e => e.Incidentid).HasColumnName("incidentid");
+                entity.Property(e => e.IncidentType).HasColumnName("incidenttype");
 
                 entity.Property(e => e.Listingid)
                                 .ValueGeneratedOnAdd()
