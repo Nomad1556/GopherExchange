@@ -19,7 +19,6 @@ namespace GopherExchange.Data
 
         public virtual DbSet<Account> Accounts { get; set; }
         public virtual DbSet<Contain> Contains { get; set; }
-        public virtual DbSet<Flag> Flags { get; set; }
         public virtual DbSet<Listing> Listings { get; set; }
         public virtual DbSet<Report> Reports { get; set; }
         public virtual DbSet<Wishlist> Wishlists { get; set; }
@@ -85,32 +84,6 @@ namespace GopherExchange.Data
                     .HasConstraintName("contains_wishlistid_fkey");
             });
 
-            modelBuilder.Entity<Flag>(entity =>
-            {
-                entity.ToTable("flags");
-
-                entity.HasKey(e => new { e.Listingid, e.Reportid });
-
-                entity.Property(e => e.Reportid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("reportid");
-
-                entity.Property(e => e.Listingid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("listingid");
-
-                entity.HasOne(d => d.Report)
-                    .WithMany()
-                    .HasForeignKey(d => d.Reportid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("flags_reportid_fkey");
-
-                entity.HasOne(d => d.Listing)
-                    .WithMany()
-                    .HasForeignKey(d => d.Listingid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("flags_listingid_fkey");
-            });
 
             modelBuilder.Entity<Listing>(entity =>
             {

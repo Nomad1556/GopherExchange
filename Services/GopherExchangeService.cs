@@ -141,17 +141,17 @@ namespace GopherExchange.Services
                 Actiondate = null,
             };
 
-            Flag flag = new Flag
-            {
-                Listingid = cmd.Listingid,
-                Reportid = report.Reportid
-            };
-
             await _context.Reports.AddAsync(report);
-            await _context.Flags.AddAsync(flag);
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<Report>> GetReportsByListingId(int id)
+        {
+
+            var reports = await _context.Reports.Where(e => e.Listingid == id).ToListAsync();
+
+            return reports;
+        }
         public async Task<List<Tuple<Listing, String>>> GetListingsInWishlistById(int id)
         {
             var contains = await _context.Contains.Where(e => e.Wishlistid == id).ToListAsync();
