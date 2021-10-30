@@ -19,7 +19,6 @@ namespace GopherExchange.Data
 
         public virtual DbSet<Account> Accounts { get; set; }
         public virtual DbSet<Contain> Contains { get; set; }
-        public virtual DbSet<File> Files { get; set; }
         public virtual DbSet<Listing> Listings { get; set; }
         public virtual DbSet<Report> Reports { get; set; }
         public virtual DbSet<Wishlist> Wishlists { get; set; }
@@ -28,7 +27,7 @@ namespace GopherExchange.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql("Name=DBConnection");
+                optionsBuilder.UseNpgsql("Name=HerokuDB");
             }
         }
 
@@ -85,32 +84,6 @@ namespace GopherExchange.Data
                     .HasConstraintName("contains_wishlistid_fkey");
             });
 
-            modelBuilder.Entity<File>(entity =>
-            {
-                entity.HasKey(e => new { e.Userid, e.Reportid });
-
-                entity.ToTable("files");
-
-                entity.Property(e => e.Reportid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("reportid");
-
-                entity.Property(e => e.Userid)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("userid");
-
-                entity.HasOne(d => d.Report)
-                    .WithMany()
-                    .HasForeignKey(d => d.Reportid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("files_reportid_fkey");
-
-                entity.HasOne(d => d.User)
-                    .WithMany()
-                    .HasForeignKey(d => d.Userid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("files_userid_fkey");
-            });
 
             modelBuilder.Entity<Listing>(entity =>
             {
@@ -151,7 +124,6 @@ namespace GopherExchange.Data
                                 .HasColumnName("actiondate");
 
                 entity.Property(e => e.Adminid)
-                                .ValueGeneratedOnAdd()
                                 .HasColumnName("adminid");
 
                 entity.Property(e => e.Description)
@@ -162,7 +134,7 @@ namespace GopherExchange.Data
                                 .HasColumnType("timestamp with time zone")
                                 .HasColumnName("incidentdate");
 
-                entity.Property(e => e.Incidentid).HasColumnName("incidentid");
+                entity.Property(e => e.IncidentType).HasColumnName("incidenttype");
 
                 entity.Property(e => e.Listingid)
                                 .ValueGeneratedOnAdd()

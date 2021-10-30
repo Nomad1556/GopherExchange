@@ -40,7 +40,7 @@ namespace GopherExchange.Pages.Account
                     var account = _usermanager.validateUser(Input);
                     if (account == null)
                     {
-                        //TODO: Implement error when a user fails to login.
+                        TempData["Failure"] = "failed";
                         return Page();
                     }
                     await _login.signIn(account);

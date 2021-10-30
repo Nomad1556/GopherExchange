@@ -35,6 +35,8 @@ namespace GopherExchange
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
                 options.LoginPath = "/Index";
+                options.LogoutPath = "/Index";
+                options.AccessDeniedPath = "/Index";
             });
 
             services.AddAuthentication(options =>

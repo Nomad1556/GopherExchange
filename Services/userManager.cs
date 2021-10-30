@@ -108,18 +108,6 @@ namespace GopherExchange.Services
             return userName;
         }
 
-        public async Task<ICollection<Wishlist>> getSessionWishlist()
-        {
-
-            int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
-            var acc = await _context.Accounts.FindAsync(claim);
-
-            if (acc == null) return null;
-
-            return acc.Wishlists;
-        }
-
         public Account validateUser(BindingLoginModel cmd)
         {
             if (cmd == null) return null;
