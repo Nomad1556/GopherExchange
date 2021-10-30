@@ -21,6 +21,12 @@ namespace GopherExchange.Services
         private readonly userManager _usermanager;
 
         private readonly IHttpContextAccessor _accessor;
+
+        public enum Response
+        {
+            Success,
+            Failure
+        }
         public GEService(GeDbContext context, ILoggerFactory factory, IHttpContextAccessor accessor, userManager userManager)
         {
             _context = context;
@@ -58,7 +64,7 @@ namespace GopherExchange.Services
             return listings;
         }
 
-        public async Task MakeAListing(BindingListingModel cmd)
+        public async Task<Response> MakeAListing(BindingListingModel cmd)
         {
             int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
@@ -79,6 +85,8 @@ namespace GopherExchange.Services
 
             await _context.AddAsync(listing);
             await _context.SaveChangesAsync();
+
+            return Response.Success;
         }
 
         public async Task<ICollection<Listing>> GetUserListings()
@@ -91,7 +99,7 @@ namespace GopherExchange.Services
             return await _context.Listings.Where(e => e.Userid == acc.Userid).ToListAsync();
         }
 
-        public async Task DeleteListingById(int id)
+        public async Task<Response> DeleteListingById(int id)
         {
 
 
@@ -100,6 +108,8 @@ namespace GopherExchange.Services
             _context.Listings.Remove(list);
 
             await _context.SaveChangesAsync();
+
+            return Response.Success;
         }
 
         public async Task<Listing> GetListingById(int id)
@@ -108,7 +118,7 @@ namespace GopherExchange.Services
             return await _context.Listings.FirstOrDefaultAsync(e => e.Listingid == id);
         }
 
-        public async Task MakeAWishlistAsync(BindingWishlistModel cmd)
+        public async Task<Response> MakeAWishlistAsync(BindingWishlistModel cmd)
         {
 
             int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -125,9 +135,11 @@ namespace GopherExchange.Services
 
             _context.Add(wishlist);
             await _context.SaveChangesAsync();
+
+            return Response.Success;
         }
 
-        public async Task MakeAReport(BindingReportModel cmd)
+        public async Task<Response> MakeAReport(BindingReportModel cmd)
         {
             Report report = new Report
             {
@@ -143,6 +155,8 @@ namespace GopherExchange.Services
 
             await _context.Reports.AddAsync(report);
             await _context.SaveChangesAsync();
+
+            return Response.Success;
         }
 
         public async Task<List<Report>> GetReportsByListingId(int id)
@@ -181,7 +195,7 @@ namespace GopherExchange.Services
             return await _context.Wishlists.FirstOrDefaultAsync(e => e.Wishlistid == id);
         }
 
-        public async Task AddToWishList(AddToWishlistBindingModel cmd)
+        public async Task<Response> AddToWishList(AddToWishlistBindingModel cmd)
         {
             Contain contain = new Contain
             {
@@ -191,9 +205,11 @@ namespace GopherExchange.Services
 
             _context.Add(contain);
             await _context.SaveChangesAsync();
+
+            return Response.Success;
         }
 
-        public async Task DeleteWishListById(int id)
+        public async Task<Response> DeleteWishListById(int id)
         {
 
             Wishlist wishlist = await _context.Wishlists.FindAsync(id);
@@ -202,9 +218,11 @@ namespace GopherExchange.Services
 
             await _context.SaveChangesAsync();
 
+            return Response.Success;
+
         }
 
-        public async Task DeleteFromWishlist(int wid, int lid)
+        public async Task<Response> DeleteFromWishlist(int wid, int lid)
         {
 
             Contain contain = await _context.Contains.FindAsync(lid, wid);
@@ -212,6 +230,8 @@ namespace GopherExchange.Services
             _context.Remove(contain);
 
             await _context.SaveChangesAsync();
+
+            return Response.Success;
         }
 
         public async Task<List<Tuple<Listing, String>>> FindListingByTitle(string title)
@@ -244,7 +264,9 @@ namespace GopherExchange.Services
                 rngCsp.GetNonZeroBytes(reportId);
             }
 
-            return Convert.ToInt32(reportId);
+            int x = BitConverter.ToInt32(reportId);
+            if (x < 0) return -x;
+            return x;
         }
 
         private int GenerateListingId()

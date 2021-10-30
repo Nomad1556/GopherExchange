@@ -9,7 +9,7 @@ namespace GopherExchange.Models
         [Required]
         public int Listingid { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please provide a description"), StringLength(500)]
         public string Description { get; set; }
 
         [Required]

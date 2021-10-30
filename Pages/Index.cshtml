@@ -77,7 +77,7 @@
 
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                 <a class="dropdown-item" href="mailto:@email">Contact</a>
-                                <a class="dropdown-item" href="#">Report</a>
+                                <a class="dropdown-item" asp-page="Report" asp-route-id="@list.Listingid">Report</a>
                                 <a class="dropdown-item" asp-page="Wishlists/AddToWishlist" asp-route-id=@list.Listingid>Add to
                                     a wishlist</a>
                             </div>

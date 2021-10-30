@@ -12,6 +12,12 @@
 
 <div class="contrainer">
     <div class="col-md-9">
+        @if (TempData["Failure"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                Email or password is incorrect
+            </div>
+        }
         <form method="post">
             <div class="form-group">
                 <label for="Email1">Email address</label>

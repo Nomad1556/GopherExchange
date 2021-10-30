@@ -124,7 +124,6 @@ namespace GopherExchange.Data
                                 .HasColumnName("actiondate");
 
                 entity.Property(e => e.Adminid)
-                                .ValueGeneratedOnAdd()
                                 .HasColumnName("adminid");
 
                 entity.Property(e => e.Description)
