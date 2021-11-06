@@ -166,6 +166,18 @@ namespace GopherExchange.Services
 
             return reports;
         }
+
+        public async Task<List<Report>> GetNoActionReports()
+        {
+            var reports = await _context.Reports.Where(e => e.Action == "None").ToListAsync();
+
+            return reports;
+        }
+
+        public async Task<Report> GetReportById(int id)
+        {
+            return await _context.Reports.FirstOrDefaultAsync(e => e.Reportid == id);
+        }
         public async Task<List<Tuple<Listing, String>>> GetListingsInWishlistById(int id)
         {
             var contains = await _context.Contains.Where(e => e.Wishlistid == id).ToListAsync();

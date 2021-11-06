@@ -1,0 +1,105 @@
+﻿@page
+@model ManageReportsModel
+@{
+    ViewData["Title"] = "Manage a report";
+}
+
+<h1 class="mt-3 mb-2"> @ViewData["Title"]</h1>
+
+<div class="container">
+    <h3>Given report</h3>
+    <div class="row my-3">
+        <div class="col">
+            <div class="form-group">
+                <label>Incident</label>
+                <input class="form-control" placeholder="@Model.report.IncidentType" readonly>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea class="form-control" rows="3" placeholder="@Model.report.Description" readonly></textarea>
+            </div>
+            <small>Date of report: @Model.report.Incidentdate.ToString()</small>
+        </div>
+    </div>
+    <h3>Associated Listing</h3>
+    <div class="row mb-3">
+        <div class="col">
+            <div class="form-group">
+                <label>Title</label>
+                <input class="form-control" placeholder="@Model.listing.Title" readonly>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea class="form-control" rows="3" placeholder="@Model.listing.Description" readonly></textarea>
+            </div>
+            <small>Date of listing creation: @Model.listing.Date.ToString()</small>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ReportModal">
+                Manage
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal fade" id="ReportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Action</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <label>Selection an action</label>
+                    <select id="selector" class="custom-select">
+                        <option name="delete">Delete this listing</option>
+                        <option name="title">Change Title</option>
+                        <option name="description">Change Description</option>
+                    </select>
+                    <div id="changetitle" class="form-group" style="visibility:hidden;">
+                        <label>Provide a new title</label>
+                        <input class="form-control">
+                    </div>
+                    <div id="changedescription" class="form-group" style="visibility:hidden;">
+                        <label>Provide a new description</label>
+                        <input class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Please provide a description of how you handled this report</label>
+                        <textarea class="form-control" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var selectElement = document.getElementById('selector');
+
+    selectElement.onchange = function () {
+        var selectedValue = selectElement.options[selectElement.selectedIndex].getAttribute("name");
+        if (selectedValue == "delete") {
+            document.getElementById("changetitle").style.visibility = "hidden";
+            document.getElementById("changedescription").style.visibility = "hidden";
+        }
+        else if (selectedValue == "title") {
+            document.getElementById("changetitle").style.visibility = "visible";
+            document.getElementById("changedescription").style.visibility = "hidden";
+        }
+        else if (selectedValue == "description") {
+            document.getElementById("changetitle").style.visibility = "hidden";
+            document.getElementById("changedescription").style.visibility = "visible";
+        }
+
+    };
+</script>
