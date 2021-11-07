@@ -55,30 +55,32 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post">
+                <form id="submitaction" method="post">
                     <label>Selection an action</label>
-                    <select id="selector" class="custom-select">
+                    <select asp-for="Input.Action" id="selector" class="custom-select">
                         <option name="delete">Delete this listing</option>
                         <option name="title">Change Title</option>
                         <option name="description">Change Description</option>
                     </select>
                     <div id="changetitle" class="form-group" style="visibility:hidden;">
                         <label>Provide a new title</label>
-                        <input class="form-control">
+                        <input asp-for="Input.ChangeTitle" class="form-control">
                     </div>
                     <div id="changedescription" class="form-group" style="visibility:hidden;">
                         <label>Provide a new description</label>
-                        <input class="form-control">
+                        <input asp-for="Input.ChangeDesc" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Please provide a description of how you handled this report</label>
-                        <textarea class="form-control" rows="3"></textarea>
+                        <textarea asp-for="Input.ActionDescription" class="form-control" rows="3"></textarea>
                     </div>
+                    <input type="hidden" asp-for="Input.listingId" value="@Model.listing.Listingid">
+                    <input type="hidden" asp-for="Input.reportId" value="@Model.report.Reportid">
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary" form="submitaction">Submit</button>
             </div>
         </div>
     </div>
