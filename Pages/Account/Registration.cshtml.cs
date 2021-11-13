@@ -44,7 +44,7 @@ namespace GopherExchange.Pages.Account
                 {
 
                     var result = await _usermanager.createAccountAsync(Input);
-                    if (result == userManager.ResponseType.Success)
+                    if (result == userManager.Response.Success)
                     {
 
                         var account = _usermanager.validateUser(new BindingLoginModel

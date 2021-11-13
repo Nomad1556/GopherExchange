@@ -39,17 +39,29 @@
             }
         </div>
     }
-    <div class="input-group mt-5">
-        <input type="text" class="form-control">
-        <div class="input-group-append">
-            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown"
-                aria-expanded="false">Search</button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item">Username</a>
-                <a class="dropdown-item">Listing by Id</a>
-                <a class="dropdown-item">Listing by Title</a>
+    <form name="searchForm" id="searchForm" method="post">
+        <div class="input-group mt-5">
+            <input type="text" class="form-control" asp-for="Query.searchTerm">
+            <input type="hidden" asp-for="Query.searchType">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown"
+                    aria-expanded="false">Search</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item"
+                        onclick="$('#Query_searchType').val('email'); $('#searchForm').submit()">Email</a>
+                    <a class="dropdown-item"
+                        onclick="$('#Query_searchType').val('id'); $('#searchForm').submit()">Listing
+                        by Id</a>
+                    <a class="dropdown-item"
+                        onclick="$('#Query_searchType').val('title'); $('#searchForm').submit()">Listing
+                        by Title</a>
+                </div>
             </div>
         </div>
-    </div>
+    </form>
+    @if (TempData["e"] != null)
+    {
+        <p>@TempData["e"]</p>
+    }
     <p class="mt-2">For emergencies contact Office of Public Safety at 410-337-6112</p>
 </div>

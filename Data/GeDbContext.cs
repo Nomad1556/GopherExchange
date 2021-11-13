@@ -143,7 +143,7 @@ namespace GopherExchange.Data
                 entity.HasOne(d => d.Listing)
                                 .WithMany(p => p.Reports)
                                 .HasForeignKey(d => d.Listingid)
-                                .OnDelete(DeleteBehavior.ClientSetNull)
+                                .OnDelete(DeleteBehavior.Cascade)
                                 .HasConstraintName("report_listingid_fkey");
             });
 

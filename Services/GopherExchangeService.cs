@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using GopherExchange.Data;
 using GopherExchange.Models;
-using GopherExchange.JoinClasses;
 using System.Security.Cryptography;
 using System.Security.Claims;
 
@@ -68,7 +67,7 @@ namespace GopherExchange.Services
         {
             int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            Account acc = await _context.Accounts.FindAsync(claim);
+            var acc = await _context.Accounts.FindAsync(claim);
 
             Listing listing = new Listing
             {
@@ -246,7 +245,7 @@ namespace GopherExchange.Services
             return Response.Success;
         }
 
-        public async Task<List<Tuple<Listing, String>>> FindListingByTitle(string title)
+        public async Task<List<Tuple<Listing, String>>> FindListingsByTitle(string title)
         {
             List<Tuple<Listing, String>> listings = new List<Tuple<Listing, String>>();
 
@@ -258,6 +257,54 @@ namespace GopherExchange.Services
                 listings.Add(Tuple.Create(l, Goucheremail));
             }
             return listings;
+        }
+
+        public async Task<Listing> FindListingByTitle(string title)
+        {
+            var p = await _context.Listings.FirstOrDefaultAsync(e => e.Title == title);
+
+            return p;
+        }
+
+        public async Task<Response> HandleReport(BindingReportActionModel cmd)
+        {
+            var report = await _context.Reports.FirstOrDefaultAsync(e => e.Reportid == cmd.reportId);
+
+            report.Actiondate = cmd.Actiondate;
+            report.Action = cmd.ActionDescription;
+            report.Adminid = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            switch (cmd.Action)
+            {
+                case "Delete this listing":
+                    return await DeleteListingById(cmd.listingId);
+                case "Change Title":
+                    await ChangeListingsTitle(cmd.listingId, cmd.ChangeTitle);
+                    return Response.Success;
+                case "Change Description":
+                    await ChangeListingDesc(cmd.listingId, cmd.ChangeDesc);
+                    return Response.Success;
+                default:
+                    return Response.Failure;
+            }
+        }
+
+        private async Task ChangeListingsTitle(int id, string title)
+        {
+            var p = await _context.Listings.FirstOrDefaultAsync(e => e.Listingid == id);
+
+            p.Title = title;
+
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task ChangeListingDesc(int id, string desc)
+        {
+            var p = await _context.Listings.FirstOrDefaultAsync(e => e.Listingid == id);
+
+            p.Description = desc;
+
+            await _context.SaveChangesAsync();
         }
 
         private int DetermineListingType(string s)

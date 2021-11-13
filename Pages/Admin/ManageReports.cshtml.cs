@@ -36,9 +36,25 @@ namespace GopherExchange.Pages.Admin
             listing = await _service.GetListingById(listingId);
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPost()
         {
-            return RedirectToPage("Dashboard");
+            if (ModelState.IsValid)
+            {
+                var response = await _service.HandleReport(Input);
+                if (response == GEService.Response.Success)
+                {
+                    return RedirectToPage("Dashboard");
+                }
+                else
+                {
+                    TempData["Failure"] = "Error";
+                    return Page();
+                }
+            }
+            else
+            {
+                return Page();
+            }
         }
     }
 }
