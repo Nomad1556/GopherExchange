@@ -270,7 +270,7 @@ namespace GopherExchange.Services
         private int GenerateReportId()
         {
             byte[] reportId = new byte[8];
-            using (RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider())
+            using (var rngCsp = RandomNumberGenerator.Create())
             {
 
                 rngCsp.GetNonZeroBytes(reportId);
@@ -286,7 +286,7 @@ namespace GopherExchange.Services
 
             byte[] listingId = new byte[5];
 
-            using (RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider())
+            using (var rngCsp = RandomNumberGenerator.Create())
             {
 
                 rngCsp.GetNonZeroBytes(listingId);

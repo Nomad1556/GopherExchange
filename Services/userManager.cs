@@ -128,7 +128,7 @@ namespace GopherExchange.Services
             int numBytesRequested = 256 / 8;
 
             byte[] salt = new byte[saltSize];
-            using (var rngCsp = new RNGCryptoServiceProvider())
+            using (var rngCsp = RandomNumberGenerator.Create())
             {
                 rngCsp.GetNonZeroBytes(salt);
             }
@@ -217,10 +217,10 @@ namespace GopherExchange.Services
         {
             byte[] accNumber = new byte[0xa];
 
-            using (RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider())
+            using (var rngCsp = RandomNumberGenerator.Create())
             {
 
-                rngCsp.GetBytes(accNumber);
+                rngCsp.GetNonZeroBytes(accNumber);
             }
 
             int x = BitConverter.ToInt32(accNumber);
