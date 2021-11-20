@@ -137,6 +137,17 @@ namespace GopherExchange.Services
             if (!verified) return null;
             return acc;
         }
+
+        public async Task DeleteAccount()
+        {
+            int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var acc = await _context.Accounts.FindAsync(claim);
+
+            _context.Accounts.Remove(acc);
+
+            await _context.SaveChangesAsync();
+        }
         private byte[] HashPassword(string password)
         {
             int saltSize = 128 / 8;
