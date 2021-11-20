@@ -249,21 +249,20 @@ namespace GopherExchange.Services
         {
             List<Tuple<Listing, String>> listings = new List<Tuple<Listing, String>>();
 
-            var p = await _context.Listings.Where(e => e.Title.Contains(title)).ToListAsync();
-
-            foreach (Listing l in p)
+            try
             {
-                String Goucheremail = await _context.Accounts.Where(e => e.Userid == l.Userid).Select(e => e.Goucheremail).SingleOrDefaultAsync();
-                listings.Add(Tuple.Create(l, Goucheremail));
+                var p = await _context.Listings.Where(e => e.Title.Contains(title)).ToListAsync();
+                foreach (Listing l in p)
+                {
+                    String Goucheremail = await _context.Accounts.Where(e => e.Userid == l.Userid).Select(e => e.Goucheremail).SingleOrDefaultAsync();
+                    listings.Add(Tuple.Create(l, Goucheremail));
+                }
+                return listings;
             }
-            return listings;
-        }
-
-        public async Task<Listing> FindListingByTitle(string title)
-        {
-            var p = await _context.Listings.FirstOrDefaultAsync(e => e.Title == title);
-
-            return p;
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public async Task<Response> HandleReport(BindingReportActionModel cmd)

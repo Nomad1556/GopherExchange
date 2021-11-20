@@ -84,13 +84,13 @@ namespace GopherExchange.Services
             return sessionAccount;
         }
 
-        public async Task<Dictionary<string, string>> getUserInformationByEmail(string email)
+        public async Task<Dictionary<String, String>> getUserInformationByEmail(string email)
         {
             var acc = await _context.Accounts.FirstOrDefaultAsync(e => e.Goucheremail == email);
 
             if (acc == null) return null;
 
-            Dictionary<string, string> UserInformation = new Dictionary<string, string>{
+            Dictionary<String, String> UserInformation = new Dictionary<String, String>{
                 {"Username", acc.Username},
                 {"Email", acc.Goucheremail},
             };

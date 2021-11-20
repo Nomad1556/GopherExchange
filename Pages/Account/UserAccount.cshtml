@@ -51,23 +51,21 @@
         <div class="card-columns">
             @foreach (GopherExchange.Data.Listing p in Model._userlisting)
             {
-                <div class="card">
+                <div class="card" style="display: inline-block">
                     <div class="card-body">
                         <h5 class="card-title">@p.Title</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Created:
-                            @p.Date.ToString()
-                        </h6>
                         @{
                             String s = "";
                             if (p.Typeid == 1) s = "Exchange";
                             if (p.Typeid == 2) s = "Give away";
                         }
-                        <h6 class="card-subtitle mb-2 text-muted">Type: @s
+                        <h6 class="card-subtitle mb-1 text-muted">Type: @s
                         </h6>
-                        <p class-text>@p.Description</p>
+                        <p class="card-text">@p.Description</p>
                         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-@p.Listingid">
                             Delete
                         </button>
+                        <p class="card-text"><small class="text-muted">@p.Date.ToString()</small></p>
                     </div>
                 </div>
                 <!-- Modal for Delete Listings -->
@@ -159,12 +157,14 @@
             </a>
         </div>
     </div>
-    <div class="row ">
-        <div class="col mt-3">
-            <form type="hidden" method="post">
-                <button type="submit" class="btn btn-warning mt-1" asp-page-handler="Logout">Sign out</button>
-            </form>
-        </div>
+    <div class="row mt-5" style="inline-block">
+        <form type="hidden" method="post">
+            <button type="submit" class="btn btn-outline-warning" asp-page-handler="Logout">Sign out</button>
+        </form>
+        <form type="hidden" method="post">
+            <button type="submit" class="btn btn-outline-danger ml-3" asp-page-handler="Logout">Delete
+                Account</button>
+        </form>
     </div>
 
     <!-- Modal for Account Edit -->

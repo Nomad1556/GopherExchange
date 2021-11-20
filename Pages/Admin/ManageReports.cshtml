@@ -25,6 +25,7 @@
                 <textarea class="form-control" rows="3" placeholder="@Model.report.Description" readonly></textarea>
             </div>
             <small>Date of report: @Model.report.Incidentdate.ToString()</small>
+            <small>Report ID: @Model.report.Reportid.ToString()</small>
         </div>
     </div>
     <h3>Associated Listing</h3>
@@ -39,6 +40,7 @@
                 <textarea class="form-control" rows="3" placeholder="@Model.listing.Description" readonly></textarea>
             </div>
             <small>Date of listing creation: @Model.listing.Date.ToString()</small>
+            <small>Listing ID: @Model.listing.Listingid</small>
         </div>
     </div>
     <div class="row">

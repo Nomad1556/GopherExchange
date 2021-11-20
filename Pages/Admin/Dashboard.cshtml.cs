@@ -23,9 +23,13 @@ namespace GopherExchange.Pages.Admin
         public SearchQuery Query { get; set; }
         public List<Report> reports { get; private set; }
 
+        public List<Report> QueryReports { get; private set; }
+
         public Dictionary<String, String> QueriedAccount { get; private set; }
 
         public Listing listing { get; private set; }
+
+        public List<Tuple<Listing, String>> listings { get; private set; }
         public DashboardModel(GEService service, userManager usermanager)
         {
             _service = service;
@@ -34,14 +38,59 @@ namespace GopherExchange.Pages.Admin
         public async Task OnGet()
         {
             reports = await _service.GetNoActionReports();
+            QueriedAccount = new Dictionary<string, string>();
+            QueryReports = new List<Report>();
+            listings = new List<Tuple<Listing, string>>();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPost()
         {
+            reports = await _service.GetNoActionReports();
             if (ModelState.IsValid)
             {
-                TempData["e"] = "Search term: " + Query.searchTerm + " Search type: " + Query.searchType;
-                return Page();
+                switch (Query.searchType)
+                {
+                    case "email":
+                        QueriedAccount = await _usermanager.getUserInformationByEmail(Query.searchTerm);
+                        if (QueriedAccount == null)
+                        {
+                            TempData["SearchError"] = "Sorry the search result did not return anything";
+                            return Page();
+                        }
+                        else return Page();
+                    case "id":
+                        try
+                        {
+                            int id = int.Parse(Query.searchTerm);
+                            var listing = await _service.GetListingById(id);
+                            var areports = await _service.GetReportsByListingId(id);
+
+                            QueryReports = areports;
+                            this.listing = listing;
+                            if (QueryReports == null || QueryReports.Count == 0 || listing == null)
+                            {
+                                TempData["SearchError"] = "Sorry the search result did not return anything";
+                                return Page();
+                            }
+                            else return Page();
+                        }
+                        catch (Exception)
+                        {
+                            TempData["SearchError"] = "Sorry the search result did not return anything";
+                            return Page();
+                        }
+                    case "title":
+                        listings = await _service.FindListingsByTitle(Query.searchTerm);
+                        if (listings == null || listings.Count == 0)
+                        {
+                            TempData["SearchError"] = "Sorry the search result did not return anything";
+                            return Page();
+                        }
+                        else return Page();
+                    default:
+                        TempData["SearchError"] = "Sorry the search result did not return anything";
+                        return Page();
+                }
             }
             else
             {
@@ -53,7 +102,7 @@ namespace GopherExchange.Pages.Admin
     public class SearchQuery
     {
         [Required(ErrorMessage = "Please enter a search term")]
-        [DataType("String"), StringLength(20)]
+        [DataType("String"), StringLength(30)]
         public string searchTerm { get; set; }
 
         [DataType("String")]
