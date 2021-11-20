@@ -38,14 +38,21 @@ namespace GopherExchange.Pages.Admin
 
         public IActionResult OnPost()
         {
-            Console.WriteLine(Query.searchTerm);
-            Console.WriteLine(Query.searchType);
-            return Page();
+            if (ModelState.IsValid)
+            {
+                TempData["e"] = "Search term: " + Query.searchTerm + " Search type: " + Query.searchType;
+                return Page();
+            }
+            else
+            {
+                return Page();
+            }
         }
     }
 
     public class SearchQuery
     {
+        [Required(ErrorMessage = "Please enter a search term")]
         [DataType("String"), StringLength(20)]
         public string searchTerm { get; set; }
 

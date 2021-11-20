@@ -59,6 +59,7 @@
             </div>
         </div>
     </form>
+    <span asp-validation-for="Query.searchTerm" class="text-danger"></span>
     @if (TempData["e"] != null)
     {
         <p>@TempData["e"]</p>
