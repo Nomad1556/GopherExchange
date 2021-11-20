@@ -8,6 +8,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 
@@ -18,7 +19,7 @@ namespace GopherExchange.Services
 
         private readonly int _iterations = 10000;
 
-        public enum ResponseType
+        public enum Response
         {
             Success,
             Failure
@@ -37,7 +38,7 @@ namespace GopherExchange.Services
             _accessor = accessor;
         }
 
-        public async Task<ResponseType> createAccountAsync(GenerateAccountModel cmd)
+        public async Task<Response> createAccountAsync(GenerateAccountModel cmd)
         {
 
             Account acc = new Account
@@ -59,11 +60,11 @@ namespace GopherExchange.Services
             catch (Exception e)
             {
                 _logger.LogInformation("Unable to create account: " + e.ToString());
-                return ResponseType.Failure;
+                return Response.Failure;
             }
 
             _logger.LogInformation("Account with password made successfully");
-            return ResponseType.Success;
+            return Response.Success;
         }
         public async Task<Dictionary<String, String>> getSessionAccount()
         {
@@ -81,6 +82,20 @@ namespace GopherExchange.Services
             };
 
             return sessionAccount;
+        }
+
+        public async Task<Dictionary<String, String>> getUserInformationByEmail(string email)
+        {
+            var acc = await _context.Accounts.FirstOrDefaultAsync(e => e.Goucheremail == email);
+
+            if (acc == null) return null;
+
+            Dictionary<String, String> UserInformation = new Dictionary<String, String>{
+                {"Username", acc.Username},
+                {"Email", acc.Goucheremail},
+            };
+
+            return UserInformation;
         }
 
         public async Task editAccount(EditAccountModel cmd)
@@ -128,7 +143,7 @@ namespace GopherExchange.Services
             int numBytesRequested = 256 / 8;
 
             byte[] salt = new byte[saltSize];
-            using (var rngCsp = new RNGCryptoServiceProvider())
+            using (var rngCsp = RandomNumberGenerator.Create())
             {
                 rngCsp.GetNonZeroBytes(salt);
             }
@@ -144,7 +159,7 @@ namespace GopherExchange.Services
             return outputBytes;
         }
 
-        private bool VerifyHashedPassword(byte[] hashedPassword, string password)
+        private static bool VerifyHashedPassword(byte[] hashedPassword, string password)
         {
             try
             {
@@ -156,7 +171,6 @@ namespace GopherExchange.Services
                 // Read the salt: must be >= 128 bits
                 if (saltLength < 128 / 8)
                 {
-                    _logger.LogInformation("Wrong salt size");
                     return false;
                 }
                 byte[] salt = new byte[saltLength];
@@ -166,7 +180,6 @@ namespace GopherExchange.Services
                 int subkeyLength = hashedPassword.Length - 13 - salt.Length;
                 if (subkeyLength < 128 / 8)
                 {
-                    _logger.LogInformation("Wrong subkey size");
                     return false;
                 }
                 byte[] expectedSubkey = new byte[subkeyLength];
@@ -179,24 +192,11 @@ namespace GopherExchange.Services
             }
             catch
             {
-                _logger.LogInformation("Error happened");
                 // This should never occur except in the case of a malformed payload, where
                 // we might go off the end of the array. Regardless, a malformed payload
                 // implies verification failed.
                 return false;
             }
-        }
-        private bool ByteArraysEqual(byte[] a, byte[] b)
-        {
-            if (a == null && b == null) return true;
-            if (a == null || b == null || a.Length != b.Length) return false;
-
-            bool areSame = true;
-            for (int i = 0; i < a.Length; i++)
-            {
-                areSame &= (a[i] == b[i]);
-            }
-            return areSame;
         }
         private static uint ReadNetworkByteOrder(byte[] buffer, int offset)
         {
@@ -205,7 +205,7 @@ namespace GopherExchange.Services
                 | ((uint)(buffer[offset + 2]) << 8)
                 | ((uint)(buffer[offset + 3]));
         }
-        private void WriteNetworkByteOrder(byte[] buffer, int offset, uint value)
+        private static void WriteNetworkByteOrder(byte[] buffer, int offset, uint value)
         {
             buffer[offset + 0] = (byte)(value >> 24);
             buffer[offset + 1] = (byte)(value >> 16);
@@ -217,10 +217,10 @@ namespace GopherExchange.Services
         {
             byte[] accNumber = new byte[0xa];
 
-            using (RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider())
+            using (var rngCsp = RandomNumberGenerator.Create())
             {
 
-                rngCsp.GetBytes(accNumber);
+                rngCsp.GetNonZeroBytes(accNumber);
             }
 
             int x = BitConverter.ToInt32(accNumber);

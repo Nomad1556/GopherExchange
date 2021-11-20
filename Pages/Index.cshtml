@@ -36,64 +36,51 @@
                     <h2 class="mt-3 mb-3">Hmm...it's quiet...too quiet</h2>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    <p class="mb-3">Why not add a listing?</p>
-                </div>
+            <div class="d-flex justify content">
+                <p class="flex-grow-1">Why not add a listing?</p>
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addListing">
+                    Add new listing
+                </button>
             </div>
-            <div class="row">
-                <div class="col">
-                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addListing">
-                        Add new listing
-                    </button>
-                </div>
-            </div>
+            <small>Please note that any listing more than 5 days old will not appear</small>
+            <hr>
         }
         else
         {
-            <h3 class="my-4 font-weight-bold">Current Listings</h3>
+            <div class="d-flex justify content">
+                <h3 class="font-weight-bold flex-grow-1">Current Listings</h3>
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addListing">
+                    Add new listing
+                </button>
+            </div>
+            <small>Please note that any listing more than 5 days old will not appear</small>
+            <hr>
             <div class="card-columns">
 
                 @foreach ((GopherExchange.Data.Listing list, String email) in Model._listings)
                 {
-                    <div class="card">
+                    <div class="card" style="display: inline-block">
                         <div class="card-body">
                             <h5 class="card-title">@list.Title</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">Created:
-                                @list.Date.ToString()
-                            </h6>
                             @{
                                 String s = "";
                                 if (list.Typeid == 1) s = "Exchange";
                                 if (list.Typeid == 2) s = "Give away";
                             }
-                            <h6 class="card-subtitle mb-2 text-muted">Type: @s
+                            <h6 class="card-subtitle mb-1 text-muted">Type: @s
                             </h6>
-                            <p class-text>@list.Description</p>
-                            <button class="btn btn-secondary dropdown-toggle" role="button" id="dropdownMenuLink"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Menu
-                            </button>
-
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="mailto:@email">Contact</a>
-                                <a class="dropdown-item" asp-page="Report" asp-route-id="@list.Listingid">Report</a>
-                                <a class="dropdown-item" asp-page="Wishlists/AddToWishlist" asp-route-id=@list.Listingid>Add to
-                                    a wishlist</a>
-                            </div>
+                            <p class="card-text">@list.Description</p>
+                            <a class="btn btn-listing btn-primary" href="mailto:@email">Contact</a>
+                            <a class="btn btn-listing btn-light" asp-page="Wishlists/AddToWishlist" asp-route-id=@list.Listingid>Add
+                                to
+                                a wishlist</a>
+                            <a class="btn btn-listing btn-light" asp-page="Report" asp-route-id="@list.Listingid">Report</a>
+                            <p class="card-text"><small class="text-muted">@list.Date.ToString()</small></p>
                         </div>
                     </div>
                 }
             </div>
-            <div class="row">
-                <div class="col">
-                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addListing">
-                        Add new listing
-                    </button>
-                </div>
-            </div>
         }
-
     }
 </div>
 
@@ -108,18 +95,25 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="alert alert-warning">
-                Be careful not to include sensitive information in the description
-            </div>
             <div class="modal-body">
+                <div class="alert alert-warning">
+                    Be careful not to include sensitive information in the description. And remember to abide by the
+                    Goucher College Code of Conduct.
+                    <hr>
+                    <small class="my-0">Your listing will only appear for 5 days. If it has been more than 5 days please
+                        delete your
+                        old
+                        listing and make a new one.</small>
+                </div>
                 <form method="post" id="makelisting">
                     <div class="form-group">
                         <label>Title</label>
                         <input asp-for="Input.Title" class="form-control" placeholder="Giving away books!">
+                        <span asp-validation-for="Input.Title" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label>Type of listing</label>
-                        <select asp-for="Input.ListingType" class="form-control">
+                        <select asp-for="Input.ListingType" class="custom-select">
                             <option>Exchange</option>
                             <option>Give away</option>
                         </select>
@@ -128,6 +122,7 @@
                         <label>Description</label>
                         <textarea asp-for="Input.Description" class="form-control"
                             placeholder="Giving away books in Welsh for CS220!" rows="2"></textarea>
+                        <span asp-validation-for="Input.Description" class="text-danger"></span>
                     </div>
                 </form>
             </div>
@@ -138,3 +133,9 @@
         </div>
     </div>
 </div>
+
+<style>
+    .btn-listing {
+        font-size: 0.95rem;
+    }
+</style>

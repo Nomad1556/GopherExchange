@@ -1,7 +1,175 @@
 ﻿@page
 @model DashboardModel
 @{
+    ViewData["Title"] = "Administrator Dashboard";
 }
-<div class="text-center">
-    <h1>Hello</h1>
+
+<h1 class="mt-3 mb-2"> @ViewData["Title"]</h1>
+
+<div class="container">
+    <h3>User Reports</h3>
+    @if (Model.reports == null || Model.reports.Count == 0)
+    {
+        <p>There are no outstanding user reports</p>
+    }
+    else
+    {
+        <div class="row row-cols-3">
+            @foreach (var report in Model.reports)
+            {
+                <div class="col col-sm-4">
+                    <div class="form-group">
+                        <label>Incident</label>
+                        <input class="form-control" placeholder="@report.IncidentType" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" rows="3" placeholder="@report.Description" readonly></textarea>
+                    </div>
+                    <small>Date of report: @report.Incidentdate.ToString()</small>
+                    @{
+                        var parms = new Dictionary<string, string>
+                {
+                {"reportId", report.Reportid.ToString()},
+                {"listingId", report.Listingid.ToString()}
+                };
+                    }
+                    <a class="btn btn-primary" asp-page="ManageReports" asp-all-route-data=parms>Manage</a>
+                </div>
+            }
+        </div>
+    }
+    <form name="searchForm" id="searchForm" method="post">
+        <div class="input-group mt-5">
+            <input type="text" class="form-control" asp-for="Query.searchTerm">
+            <input type="hidden" asp-for="Query.searchType">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown"
+                    aria-expanded="false">Search</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item"
+                        onclick="$('#Query_searchType').val('email'); $('#searchForm').submit()">Email</a>
+                    <a class="dropdown-item"
+                        onclick="$('#Query_searchType').val('id'); $('#searchForm').submit()">Listing
+                        by Id</a>
+                    <a class="dropdown-item"
+                        onclick="$('#Query_searchType').val('title'); $('#searchForm').submit()">Listing
+                        by Title</a>
+                </div>
+            </div>
+        </div>
+    </form>
+    <span asp-validation-for="Query.searchTerm" class="text-danger"></span>
+    @if (TempData["SearchError"] != null)
+    {
+        <p class="text-danger">@TempData["SearchError"]</p>
+    }
+    <p class="mt-2">For emergencies contact Office of Public Safety at 410-337-6112</p>
+    <p class="mt-1">
+        To use the search function please write your search and then click the appropriate filter.
+        <br>
+        Please use "Email" to grab a user account information via their email.
+        <br>
+        Please use "Listing by Id" to grab a listing and any associated reports with it.
+        <br>
+        Please use "Listing by Title" to grab listings with associated title(s).
+    </p>
+    @if (@Model.QueriedAccount != null && @Model.QueriedAccount.Count != 0)
+    {
+        <h4 class="my-2">Queried Account</h4>
+        <div class="list-group">
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <h5>Username</h5>
+                        <input class="form-control" type="text" placeholder="@Model.QueriedAccount["Username"]" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <h5>Goucher email</h5>
+                        <input class="form-control" type="text" placeholder=@Model.QueriedAccount["Email"] readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @if (@Model.listings != null && @Model.listings.Count != 0)
+    {
+        <h4 class="my-2">Queried Listings</h4>
+        <div class="card-columns">
+
+            @foreach ((GopherExchange.Data.Listing list, String email) in Model.listings)
+            {
+                <div class="card" style="display: inline-block">
+                    <div class="card-body">
+                        <h5 class="card-title">@list.Title</h5>
+                        @{
+                            String s = "";
+                            if (list.Typeid == 1) s = "Exchange";
+                            if (list.Typeid == 2) s = "Give away";
+                        }
+                        <h6 class="card-subtitle mb-1 text-muted">Type: @s
+                        </h6>
+                        <p class="card-text">@list.Description</p>
+                        <p class="card-text"><small>Email:@email</small></p>
+                        <p class="card-text"><small>Listing ID:@list.Listingid</small></p>
+                        <p class="card-text"><small class="text-muted">@list.Date.ToString()</small></p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    @if (@Model.QueryReports != null && @Model.QueryReports.Count != 0)
+    {
+        <h4 class="my-2">Queried listing and associated reports</h4>
+        <div class="row mb-3">
+            <div class="col">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input class="form-control" placeholder="@Model.listing.Title" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea class="form-control" rows="3" placeholder="@Model.listing.Description" readonly></textarea>
+                </div>
+                <small>Date of listing creation: @Model.listing.Date.ToString()</small>
+                <small>Listing ID: @Model.listing.Listingid</small>
+            </div>
+        </div>
+        <div class="row row-cols-3">
+            @foreach (var areport in Model.QueryReports)
+            {
+                <div class="col col-sm-4">
+                    <div class="form-group">
+                        <label>Incident</label>
+                        <input class="form-control" placeholder="@areport.IncidentType" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" rows="3" placeholder="@areport.Description" readonly></textarea>
+                    </div>
+                    @if (areport.Action.Equals("None"))
+                    {
+                        <div class="form-group">
+                            <label>Action Description</label>
+                            <textarea class="form-control" rows="3" placeholder="No action was taken" readonly></textarea>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <label>Action Description</label>
+                            <textarea class="form-control" rows="3" placeholder="@areport.Action" readonly></textarea>
+                        </div>
+                    }
+                    <small>Date of report: @areport.Incidentdate.ToString()</small>
+                    <br>
+                    <small>Report ID: @areport.Reportid.ToString()</small>
+                </div>
+            }
+        </div>
+    }
 </div>

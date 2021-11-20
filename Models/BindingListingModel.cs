@@ -6,13 +6,13 @@ namespace GopherExchange.Models
     public class BindingListingModel
     {
 
-        [Required]
+        [Required, StringLength(50)]
         public string Title { get; set; }
 
         [Required]
         public string ListingType { get; set; }
 
-        [Required]
+        [Required, StringLength(150)]
         public string Description { get; set; }
 
         public DateTime time = DateTime.UtcNow;

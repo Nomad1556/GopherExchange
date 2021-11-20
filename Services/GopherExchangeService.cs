@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using GopherExchange.Data;
 using GopherExchange.Models;
-using GopherExchange.JoinClasses;
 using System.Security.Cryptography;
 using System.Security.Claims;
 
@@ -68,7 +67,7 @@ namespace GopherExchange.Services
         {
             int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            Account acc = await _context.Accounts.FindAsync(claim);
+            var acc = await _context.Accounts.FindAsync(claim);
 
             Listing listing = new Listing
             {
@@ -166,6 +165,18 @@ namespace GopherExchange.Services
 
             return reports;
         }
+
+        public async Task<List<Report>> GetNoActionReports()
+        {
+            var reports = await _context.Reports.Where(e => e.Action == "None").ToListAsync();
+
+            return reports;
+        }
+
+        public async Task<Report> GetReportById(int id)
+        {
+            return await _context.Reports.FirstOrDefaultAsync(e => e.Reportid == id);
+        }
         public async Task<List<Tuple<Listing, String>>> GetListingsInWishlistById(int id)
         {
             var contains = await _context.Contains.Where(e => e.Wishlistid == id).ToListAsync();
@@ -234,18 +245,65 @@ namespace GopherExchange.Services
             return Response.Success;
         }
 
-        public async Task<List<Tuple<Listing, String>>> FindListingByTitle(string title)
+        public async Task<List<Tuple<Listing, String>>> FindListingsByTitle(string title)
         {
             List<Tuple<Listing, String>> listings = new List<Tuple<Listing, String>>();
 
-            var p = await _context.Listings.Where(e => e.Title.Contains(title)).ToListAsync();
-
-            foreach (Listing l in p)
+            try
             {
-                String Goucheremail = await _context.Accounts.Where(e => e.Userid == l.Userid).Select(e => e.Goucheremail).SingleOrDefaultAsync();
-                listings.Add(Tuple.Create(l, Goucheremail));
+                var p = await _context.Listings.Where(e => e.Title.Contains(title)).ToListAsync();
+                foreach (Listing l in p)
+                {
+                    String Goucheremail = await _context.Accounts.Where(e => e.Userid == l.Userid).Select(e => e.Goucheremail).SingleOrDefaultAsync();
+                    listings.Add(Tuple.Create(l, Goucheremail));
+                }
+                return listings;
             }
-            return listings;
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<Response> HandleReport(BindingReportActionModel cmd)
+        {
+            var report = await _context.Reports.FirstOrDefaultAsync(e => e.Reportid == cmd.reportId);
+
+            report.Actiondate = cmd.Actiondate;
+            report.Action = cmd.ActionDescription;
+            report.Adminid = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            switch (cmd.Action)
+            {
+                case "Delete this listing":
+                    return await DeleteListingById(cmd.listingId);
+                case "Change Title":
+                    await ChangeListingsTitle(cmd.listingId, cmd.ChangeTitle);
+                    return Response.Success;
+                case "Change Description":
+                    await ChangeListingDesc(cmd.listingId, cmd.ChangeDesc);
+                    return Response.Success;
+                default:
+                    return Response.Failure;
+            }
+        }
+
+        private async Task ChangeListingsTitle(int id, string title)
+        {
+            var p = await _context.Listings.FirstOrDefaultAsync(e => e.Listingid == id);
+
+            p.Title = title;
+
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task ChangeListingDesc(int id, string desc)
+        {
+            var p = await _context.Listings.FirstOrDefaultAsync(e => e.Listingid == id);
+
+            p.Description = desc;
+
+            await _context.SaveChangesAsync();
         }
 
         private int DetermineListingType(string s)
@@ -258,7 +316,7 @@ namespace GopherExchange.Services
         private int GenerateReportId()
         {
             byte[] reportId = new byte[8];
-            using (RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider())
+            using (var rngCsp = RandomNumberGenerator.Create())
             {
 
                 rngCsp.GetNonZeroBytes(reportId);
@@ -274,7 +332,7 @@ namespace GopherExchange.Services
 
             byte[] listingId = new byte[5];
 
-            using (RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider())
+            using (var rngCsp = RandomNumberGenerator.Create())
             {
 
                 rngCsp.GetNonZeroBytes(listingId);

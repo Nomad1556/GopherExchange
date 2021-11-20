@@ -24,7 +24,7 @@ namespace GopherExchange.Pages
         public async Task OnGet(string term)
         {
             searchTerm = term;
-            listings = await _service.FindListingByTitle(term);
+            listings = await _service.FindListingsByTitle(term);
         }
     }
 }
