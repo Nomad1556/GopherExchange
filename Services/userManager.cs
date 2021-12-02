@@ -19,6 +19,9 @@ namespace GopherExchange.Services
 
         private readonly int _iterations = 10000;
 
+        private readonly int _saltSize = 128 / 8;
+        private readonly int _numBytesRequested = 256 / 8;
+
         public enum Response
         {
             Success,
@@ -98,6 +101,13 @@ namespace GopherExchange.Services
             return UserInformation;
         }
 
+        public async Task<bool> checkForDuplicate(string email)
+        {
+            var p = await _context.Accounts.FirstOrDefaultAsync(e => e.Goucheremail == email);
+
+            return p != null;
+        }
+
         public async Task editAccount(EditAccountModel cmd)
         {
             int claim = int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -150,23 +160,21 @@ namespace GopherExchange.Services
         }
         private byte[] HashPassword(string password)
         {
-            int saltSize = 128 / 8;
-            int numBytesRequested = 256 / 8;
 
-            byte[] salt = new byte[saltSize];
-            using (var rngCsp = RandomNumberGenerator.Create())
+            byte[] salt = new byte[_saltSize];
+            using (var rng = RandomNumberGenerator.Create())
             {
-                rngCsp.GetNonZeroBytes(salt);
+                rng.GetBytes(salt);
             }
-            byte[] subkey = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA256, _iterations, numBytesRequested);
+            byte[] subkey = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA256, _iterations, _numBytesRequested);
 
             var outputBytes = new byte[13 + salt.Length + subkey.Length];
             outputBytes[0] = 0x01; // format marker
             WriteNetworkByteOrder(outputBytes, 1, (uint)KeyDerivationPrf.HMACSHA256);
             WriteNetworkByteOrder(outputBytes, 5, (uint)_iterations);
-            WriteNetworkByteOrder(outputBytes, 9, (uint)saltSize);
+            WriteNetworkByteOrder(outputBytes, 9, (uint)_saltSize);
             Buffer.BlockCopy(salt, 0, outputBytes, 13, salt.Length);
-            Buffer.BlockCopy(subkey, 0, outputBytes, 13 + saltSize, subkey.Length);
+            Buffer.BlockCopy(subkey, 0, outputBytes, 13 + _saltSize, subkey.Length);
             return outputBytes;
         }
 

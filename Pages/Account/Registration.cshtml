@@ -10,7 +10,12 @@
 <p>Remember, only students, faculty and staff of Goucher College are allowed to register. You will need a valid
     Goucher email to make an account.</p>
 <hr>
-
+@if (TempData["Duplicate"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+    An account with that email already exists.
+</div>
+}
 <div class="container">
     <div class="row">
         <div class="col md-9">
