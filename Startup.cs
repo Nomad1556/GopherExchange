@@ -17,9 +17,11 @@ namespace GopherExchange
 {
     public class Startup
     {
+        readonly string dbPassword;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            dbPassword = Environment.GetEnvironmentVariable("HerokuDB");
         }
 
         public IConfiguration Configuration { get; }
@@ -29,7 +31,7 @@ namespace GopherExchange
         {
             services.AddRazorPages();
             services.AddDbContext<GeDbContext>(options =>
-                options.UseNpgsql(Configuration["HerokuDB"]));
+                options.UseNpgsql(dbPassword));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
