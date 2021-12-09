@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,7 +30,7 @@ namespace GopherExchange
         {
             services.AddRazorPages();
             services.AddDbContext<GeDbContext>(options =>
-                options.UseNpgsql(Configuration["HerokuDB"]));
+                options.UseNpgsql(Configuration["HerokuDB"].Replace("\"", "")));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -47,6 +48,8 @@ namespace GopherExchange
             services.AddScoped<GEService>();
             services.AddScoped<userManager>();
             services.AddTransient<loginManager>();
+            services.AddDataProtection().SetApplicationName("GopherExchange")
+            .PersistKeysToFileSystem(new System.IO.DirectoryInfo("/app"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
