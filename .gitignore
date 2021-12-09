@@ -457,3 +457,5 @@ $RECYCLE.BIN/
 *.sql
 Migrations/
 launch.sh
+
+.env

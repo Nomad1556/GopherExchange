@@ -37,6 +37,32 @@
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build Docker Image",
+            "command": "docker",
+            "type": "shell",
+            "args": [
+                "build",
+                "-t",
+                "gopherexchange:sample",
+                "."
+            ]
+        },
+        {
+            "label": "Run in Docker",
+            "command": "docker",
+            "type": "shell",
+            "args": [
+                "run",
+                "--rm",
+                "-it",
+                "--env-file",
+                ".env",
+                "-p",
+                "8000:80",
+                "gopherexchange:sample"
+            ]
         }
     ]
 }

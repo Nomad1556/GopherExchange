@@ -66,5 +66,12 @@ namespace GopherExchange.Pages.Account
             await _login.signOut();
             return RedirectToPage("../Index");
         }
+
+        public async Task<IActionResult> OnPostDeleteAccount()
+        {
+            await _usermanager.DeleteAccount();
+            await _login.signOut();
+            return RedirectToPage("../Index");
+        }
     }
 }

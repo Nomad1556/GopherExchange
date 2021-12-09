@@ -42,6 +42,13 @@ namespace GopherExchange.Pages.Account
             {
                 if (ModelState.IsValid)
                 {
+                    bool duplicate = await _usermanager.checkForDuplicate(Input.goucherEmail);
+
+                    if (duplicate)
+                    {
+                        TempData["Duplicate"] = "Duplicate";
+                        return Page();
+                    }
 
                     var result = await _usermanager.createAccountAsync(Input);
                     if (result == userManager.Response.Success)
