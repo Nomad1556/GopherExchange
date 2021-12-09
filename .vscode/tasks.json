@@ -53,7 +53,6 @@
             "label": "Run in Docker",
             "command": "docker",
             "type": "shell",
-            "dependsOn": ["Build Docker Image"],
             "args": [
                 "run",
                 "--rm",
