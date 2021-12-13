@@ -67,15 +67,16 @@ namespace GopherExchange.Pages.Admin
 
                             QueryReports = areports;
                             this.listing = listing;
-                            if (QueryReports == null || QueryReports.Count == 0 || listing == null)
+                            if (listing == null)
                             {
                                 TempData["SearchError"] = "Sorry the search result did not return anything";
                                 return Page();
                             }
                             else return Page();
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
+                            Console.WriteLine(e.ToString());
                             TempData["SearchError"] = "Sorry the search result did not return anything";
                             return Page();
                         }
