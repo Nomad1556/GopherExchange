@@ -11,3 +11,22 @@ missed by the conversation happening around them. GopherExchange is a Craigslist
 inspired web application where Goucher students can make listings to give away or
 exchange books, school supplies, and/or belongings.
 
+### Dependencies 
+- NET 5.0 >= 
+- PostgreSQL >= 12.0
+
+Above dependencies are the bare minimum to get the project running. 
+
+Use ``` dotnet restore ``` to grab the specific dependencies from the ```.csproj``` file. 
+
+## Road map
+
+- [x] Minimum Viable Product
+- [x] [Capstone Presentation](https://goucher.zoom.us/rec/share/BW_gzaqC7INHieqAxuq48UwZsxpdEFRW7250vqi7C1PfbRuc57FWG7GBYXQqX2Rr.sTogfNQHpP2-EN8K)
+- [ ] Implement features that were left out
+- [ ] Public beta in spring
+- [ ] Implement student feedback
+
+## Contact
+
+Wanna contribute? Have suggestions? Fork the repo? Please email me first at nsotkilava@outlook.com
