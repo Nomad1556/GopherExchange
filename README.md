@@ -13,7 +13,7 @@ exchange books, school supplies, and/or belongings.
 
 ### Dependencies
 
-- NET 5.0 >=
+- .NET 5.0 >=
 - PostgreSQL 12.0 >=
 
 Above dependencies are the bare minimum to get the project running.
