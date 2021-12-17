@@ -11,13 +11,14 @@ missed by the conversation happening around them. GopherExchange is a Craigslist
 inspired web application where Goucher students can make listings to give away or
 exchange books, school supplies, and/or belongings.
 
-### Dependencies 
-- NET 5.0 >= 
-- PostgreSQL >= 12.0
+### Dependencies
 
-Above dependencies are the bare minimum to get the project running. 
+- NET 5.0 >=
+- PostgreSQL 12.0 >=
 
-Use ``` dotnet restore ``` to grab the specific dependencies from the ```.csproj``` file. 
+Above dependencies are the bare minimum to get the project running.
+
+Use `dotnet restore` to grab the specific dependencies from the `.csproj` file.
 
 ## Road map
 
