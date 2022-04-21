@@ -40,7 +40,7 @@ namespace GopherExchange.Pages.Account
                     var account = _usermanager.validateUser(Input);
                     if (account == null)
                     {
-                        TempData["Failure"] = "failed";
+                        TempData["Failure"] = "Email or password is incorrect";
                         return Page();
                     }
                     await _login.signIn(account);

@@ -36,7 +36,7 @@ namespace GopherExchange.Pages
                 var response = await _service.MakeAReport(Input);
                 if (response == GEService.Response.Success)
                 {
-                    TempData["Success"] = "True";
+                    TempData["Success"] = "Report submitted successfuly! Thank you for keeping Gopher Exchange safe.";
                     return RedirectToPage("Report");
                 }
                 else return Page();

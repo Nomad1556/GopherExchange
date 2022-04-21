@@ -46,7 +46,7 @@ namespace GopherExchange.Pages.Account
 
                     if (duplicate)
                     {
-                        TempData["Duplicate"] = "Duplicate";
+                        TempData["Duplicate"] = "An account with that email already exists";
                         return Page();
                     }
 
