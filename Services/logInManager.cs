@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Security.Claims;
-using GopherExchange.Models;
 using GopherExchange.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;

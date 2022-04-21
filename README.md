@@ -24,10 +24,10 @@ Use `dotnet restore` to grab the specific dependencies from the `.csproj` file.
 
 - [x] Minimum Viable Product
 - [x] [Capstone Presentation](https://goucher.zoom.us/rec/share/BW_gzaqC7INHieqAxuq48UwZsxpdEFRW7250vqi7C1PfbRuc57FWG7GBYXQqX2Rr.sTogfNQHpP2-EN8K)
-- [ ] Implement features that were left out
-- [ ] Public beta in spring
-- [ ] Implement student feedback
+- [ ] ~~Implement features that were left out~~
+- [ ] ~~Public beta in spring~~
+- [ ] ~~Implement student feedback~~
 
-## Contact
+## Depricated
 
-Wanna contribute? Have suggestions? Fork the repo? Please email me first at nsotkilava@outlook.com
+This project is depricated is not being maintained anymore
